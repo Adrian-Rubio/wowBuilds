@@ -1,10 +1,9 @@
--- BuildViewerData v3.0
--- Última actualización: 2026-04-10
+-- BuildViewerData v3.5 (Midnight Fix)
 BuildViewerData = {
     ["Death Knight"] = {
         ["Blood"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
@@ -71,7 +70,7 @@ BuildViewerData = {
         },
         ["Frost"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/frost-death-knight-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -138,7 +137,7 @@ BuildViewerData = {
         },
         ["Unholy"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/unholy-death-knight-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -207,11 +206,11 @@ BuildViewerData = {
     ["Demon Hunter"] = {
         ["Havoc"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/havoc-demon-hunter-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CEkAAAAAAAAAAAAAAAAAAAAAAYGMzMjZMzMzMmJjZGAAAAAAwsZMbzMGzsNzM2mt5BmhxwYZglZxMGmNmGzMjhNAAAAAAAAmZwAAAAwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251175, name = "Soulblight Cleaver" } },
                         ["Head"] = { { id = 251109, name = "Spellsnap Shadowmask" } },
@@ -226,12 +225,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 258577, name = "Boots of Burning Focus" } },
                         ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
                         ["Finger2"] = { { id = 193708, name = "Platinum Star Band" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 260235, name = "Umbral Plume" }, { id = 252420, name = "Solarflare Prism" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250258, name = "Vessel of Tortured Souls" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "CEkAAAAAAAAAAAAAAAAAAAAAAYGMzMjZMzMzMmJjZGAAAAAAwsZMbzMGzsNzM2mt5BmhxwYZglZxMGmNmGzMjhNAAAAAAAAmZwAAAAwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251175, name = "Soulblight Cleaver" } },
                         ["Head"] = { { id = 251109, name = "Spellsnap Shadowmask" } },
@@ -246,12 +245,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 258577, name = "Boots of Burning Focus" } },
                         ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
                         ["Finger2"] = { { id = 193708, name = "Platinum Star Band" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 260235, name = "Umbral Plume" }, { id = 252420, name = "Solarflare Prism" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250258, name = "Vessel of Tortured Souls" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CEkAAAAAAAAAAAAAAAAAAAAAAYmZmZmZ2mxMzMGzkxMDAAAAAAYWMmtZYmBmx2sNzMjxALDsNbmxwsw0YmZMjNAAAgBAAAwMDGAAAAG",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251175, name = "Soulblight Cleaver" } },
                         ["Head"] = { { id = 251109, name = "Spellsnap Shadowmask" } },
@@ -266,7 +265,7 @@ BuildViewerData = {
                         ["Feet"] = { { id = 258577, name = "Boots of Burning Focus" } },
                         ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
                         ["Finger2"] = { { id = 193708, name = "Platinum Star Band" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 260235, name = "Umbral Plume" }, { id = 252420, name = "Solarflare Prism" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250258, name = "Vessel of Tortured Souls" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
@@ -274,7 +273,7 @@ BuildViewerData = {
         },
         ["Vengeance"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/vengeance-demon-hunter-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
@@ -343,7 +342,7 @@ BuildViewerData = {
     ["Druid"] = {
         ["Balance"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/balance-druid-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -410,11 +409,11 @@ BuildViewerData = {
         },
         ["Feral"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/feral-druid-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CcGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjZwMzMzMmtlxyMbzYGzMDAAAAbBzmhxMjaGzyMzMzYMjBAAAAAgBGAAAAAgZbmlmtZW2Az8AALmBDAgZGAMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245771, name = "Aln'hara Pikestaff" } },
                         ["Head"] = { { id = 250024, name = "Branches of the Luminous Bloom" } },
@@ -429,12 +428,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 249382, name = "Canopy Walker's Footwraps" } },
                         ["Finger1"] = { { id = 251093, name = "Omission of Light" } },
                         ["Finger2"] = { { id = 251217, name = "Occlusion of Void" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249344, name = "Light Company Guidon" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "CcGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjZwMzMzMmtlxyMbzYGzMDAAAAbBzmhxMjaGzyMzMzYMjBAAAAAgBGAAAAAgZbmlmtZW2Az8AALmBDAgZGAMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245771, name = "Aln'hara Pikestaff" } },
                         ["Head"] = { { id = 250024, name = "Branches of the Luminous Bloom" } },
@@ -449,12 +448,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 249382, name = "Canopy Walker's Footwraps" } },
                         ["Finger1"] = { { id = 251093, name = "Omission of Light" } },
                         ["Finger2"] = { { id = 251217, name = "Occlusion of Void" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249344, name = "Light Company Guidon" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CcGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDzMzMjZmNjtZ2mZmZegZGAAAA2CmNDPgZG1MmFzMzMLjZYAAAAAAMwAAAAoZWmtZmZAALwMzAswgBAAwMbYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245771, name = "Aln'hara Pikestaff" } },
                         ["Head"] = { { id = 250024, name = "Branches of the Luminous Bloom" } },
@@ -469,7 +468,7 @@ BuildViewerData = {
                         ["Feet"] = { { id = 249382, name = "Canopy Walker's Footwraps" } },
                         ["Finger1"] = { { id = 251093, name = "Omission of Light" } },
                         ["Finger2"] = { { id = 251217, name = "Occlusion of Void" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249344, name = "Light Company Guidon" }, { id = 249345, name = "Ranger-Captain's Iridescent Insignia" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
@@ -477,11 +476,11 @@ BuildViewerData = {
         },
         ["Guardian"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/guardian-druid-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CgGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgZmZml5BGjxiZZMPwMLLDYzwoJamZWmZmZmlxMAAAAAAMsMDYbbmBjZZAMBAAAsZMzAsYGMYwy2AMzAYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249278, name = "Alnscorned Spire" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -501,7 +500,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CgGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgZmZml5BGjxiZZMPwMLLDYzwoJamZWmZmZmlxMAAAAAAMsMDYbbmBjZZAMBAAAsZMzAsYGMYwy2AMzAYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249278, name = "Alnscorned Spire" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -521,7 +520,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CgGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgZmZml5BGjxiZZMPwMLLDYzwoJamZWmZmZmlxMAAAAAAMsMDYbbmBjZZAMBAAAsZMzAsYGMYwy2AMzAYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249278, name = "Alnscorned Spire" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -544,7 +543,7 @@ BuildViewerData = {
         },
         ["Restoration"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/restoration-druid-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
@@ -559,6 +558,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249314, name = "Twisted Twilight Sash" } },
                         ["Legs"] = { { id = 250023, name = "Phloemwraps of the Luminous Bloom" } },
                         ["Feet"] = { { id = 251210, name = "Eclipse Espadrilles" } },
+                        ["Finger1"] = { { id = 251115, name = "Bifurcation Band" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
                         ["MainHand"] = { { id = 249922, name = "Tome of Alnscorned Regret" } },
                     },
                 },
@@ -574,6 +575,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249314, name = "Twisted Twilight Sash" } },
                         ["Legs"] = { { id = 250023, name = "Phloemwraps of the Luminous Bloom" } },
                         ["Feet"] = { { id = 251210, name = "Eclipse Espadrilles" } },
+                        ["Finger1"] = { { id = 251115, name = "Bifurcation Band" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
                         ["MainHand"] = { { id = 249922, name = "Tome of Alnscorned Regret" } },
                     },
                 },
@@ -589,6 +592,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249314, name = "Twisted Twilight Sash" } },
                         ["Legs"] = { { id = 250023, name = "Phloemwraps of the Luminous Bloom" } },
                         ["Feet"] = { { id = 251210, name = "Eclipse Espadrilles" } },
+                        ["Finger1"] = { { id = 251115, name = "Bifurcation Band" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
                         ["MainHand"] = { { id = 249922, name = "Tome of Alnscorned Regret" } },
                     },
                 },
@@ -598,11 +603,11 @@ BuildViewerData = {
     ["Evoker"] = {
         ["Augmentation"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/augmentation-evoker-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CEcBAAAAAAAAAAAAAAAAAAAAAMmZmZbmZmxyAzsMjxwMAAAAAAAAYmBzAjpGzMzAAAAgZMzMmZWmZmBmZzYwCsMGGbDgZQshZGYmBDG",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251178, name = "Ceremonial Hexblade" }, { id = 251111, name = "Splitshroud Stinger" }, { id = 258050, name = "Arcanic of the High Sage" }, { id = 249276, name = "Grimoire of the Eternal Light" }, { id = 193709, name = "Vexamus' Expulsion Rod" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" }, { id = 249317, name = "Frenzy's Rebuke" }, { id = 49824, name = "Horns of the Spurned Val'kyr" } },
@@ -615,10 +620,12 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249377, name = "Darkstrider Treads" }, { id = 249999, name = "Spelltreads of the Black Talon" }, { id = 193715, name = "Boots of Explosive Growth" } },
+                        ["Finger1"] = { { id = 251217, name = "Occlusion of Void" }, { id = 249920, name = "Eye of Midnight" }, { id = 49812, name = "Purloined Wedding Ring" }, { id = 240949, name = "Masterwork Sin'dorei Band" } },
+                        ["Trinket1"] = { { id = 249810, name = "Shadow of the Empyrean Requiem" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 250223, name = "Soulcatcher's Charm" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "CEcBAAAAAAAAAAAAAAAAAAAAAMmZmZbmZmxyAzsMjxwMAAAAAAAAYmBzAjpGzMzAAAAgZMzMmZWmZmBmZzYwCsMGGbDgZQshZGYmBDG",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251178, name = "Ceremonial Hexblade" }, { id = 251111, name = "Splitshroud Stinger" }, { id = 258050, name = "Arcanic of the High Sage" }, { id = 249276, name = "Grimoire of the Eternal Light" }, { id = 193709, name = "Vexamus' Expulsion Rod" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" }, { id = 249317, name = "Frenzy's Rebuke" }, { id = 49824, name = "Horns of the Spurned Val'kyr" } },
@@ -631,10 +638,12 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249377, name = "Darkstrider Treads" }, { id = 249999, name = "Spelltreads of the Black Talon" }, { id = 193715, name = "Boots of Explosive Growth" } },
+                        ["Finger1"] = { { id = 251217, name = "Occlusion of Void" }, { id = 249920, name = "Eye of Midnight" }, { id = 49812, name = "Purloined Wedding Ring" }, { id = 240949, name = "Masterwork Sin'dorei Band" } },
+                        ["Trinket1"] = { { id = 249810, name = "Shadow of the Empyrean Requiem" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 250223, name = "Soulcatcher's Charm" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CEcBAAAAAAAAAAAAAAAAAAAAAMmZmZbmZmxyAzsMjxwMAAAAAAAAYmBzwY8A1YmZGAAAAMzMjxMz2MzMwMbGDWglxwYbAMDiNMzAzMYwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 251178, name = "Ceremonial Hexblade" }, { id = 251111, name = "Splitshroud Stinger" }, { id = 258050, name = "Arcanic of the High Sage" }, { id = 249276, name = "Grimoire of the Eternal Light" }, { id = 193709, name = "Vexamus' Expulsion Rod" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" }, { id = 249317, name = "Frenzy's Rebuke" }, { id = 49824, name = "Horns of the Spurned Val'kyr" } },
@@ -647,13 +656,15 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249377, name = "Darkstrider Treads" }, { id = 249999, name = "Spelltreads of the Black Talon" }, { id = 193715, name = "Boots of Explosive Growth" } },
+                        ["Finger1"] = { { id = 251217, name = "Occlusion of Void" }, { id = 249920, name = "Eye of Midnight" }, { id = 49812, name = "Purloined Wedding Ring" }, { id = 240949, name = "Masterwork Sin'dorei Band" } },
+                        ["Trinket1"] = { { id = 249810, name = "Shadow of the Empyrean Requiem" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 250223, name = "Soulcatcher's Charm" } },
                     },
                 },
             },
         },
         ["Devastation"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/devastation-evoker-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -670,6 +681,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249999, name = "Spelltreads of the Black Talon" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249809, name = "Locus-Walker's Ribbon" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Raid"] = {
@@ -686,6 +701,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249999, name = "Spelltreads of the Black Talon" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249809, name = "Locus-Walker's Ribbon" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Mythic+"] = {
@@ -702,17 +721,21 @@ BuildViewerData = {
                         ["Waist"] = { { id = 49810, name = "Scabrous Zombie Leather Belt" } },
                         ["Legs"] = { { id = 249996, name = "Greaves of the Black Talon" } },
                         ["Feet"] = { { id = 249999, name = "Spelltreads of the Black Talon" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249809, name = "Locus-Walker's Ribbon" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
             },
         },
         ["Preservation"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/preservation-evoker-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "FlameshaperRaidChronowardenRaidChronowardenMythic+/DelveFlameshaperMythic+",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 258514, name = "Umbral Spire of Zuraal" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" } },
@@ -732,7 +755,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "FlameshaperRaidChronowardenRaidChronowardenMythic+/DelveFlameshaperMythic+",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 258514, name = "Umbral Spire of Zuraal" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" } },
@@ -752,7 +775,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "FlameshaperRaidChronowardenRaidChronowardenMythic+/DelveFlameshaperMythic+",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 258514, name = "Umbral Spire of Zuraal" } },
                         ["Head"] = { { id = 249914, name = "Oblivion Guise" } },
@@ -777,7 +800,7 @@ BuildViewerData = {
     ["Hunter"] = {
         ["Beast Mastery"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -844,7 +867,7 @@ BuildViewerData = {
         },
         ["Marksmanship"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/marksmanship-hunter-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -911,7 +934,7 @@ BuildViewerData = {
         },
         ["Survival"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/survival-hunter-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -980,7 +1003,7 @@ BuildViewerData = {
     ["Mage"] = {
         ["Arcane"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/arcane-mage-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -997,6 +1020,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 251090, name = "Commander's Faded Breeches" } },
                         ["Feet"] = { { id = 249373, name = "Dream-Scorched Striders" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Raid"] = {
@@ -1013,6 +1040,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 251090, name = "Commander's Faded Breeches" } },
                         ["Feet"] = { { id = 249373, name = "Dream-Scorched Striders" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Mythic+"] = {
@@ -1029,13 +1060,17 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 251090, name = "Commander's Faded Breeches" } },
                         ["Feet"] = { { id = 249373, name = "Dream-Scorched Striders" } },
+                        ["Finger1"] = { { id = 249919, name = "Sin'dorei Band of Hope" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
             },
         },
         ["Fire"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/fire-mage-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -1052,6 +1087,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 250059, name = "Voidbreaker's Britches" } },
                         ["Feet"] = { { id = 250062, name = "Voidbreaker's Treads" }, { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 249369, name = "Bond of Light" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 250144, name = "Emberwing Feather" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Raid"] = {
@@ -1068,6 +1107,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 250059, name = "Voidbreaker's Britches" } },
                         ["Feet"] = { { id = 250062, name = "Voidbreaker's Treads" }, { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 249369, name = "Bond of Light" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 250144, name = "Emberwing Feather" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
                 ["Mythic+"] = {
@@ -1084,13 +1127,17 @@ BuildViewerData = {
                         ["Waist"] = { { id = 249376, name = "Whisper-Inscribed Sash" } },
                         ["Legs"] = { { id = 250059, name = "Voidbreaker's Britches" } },
                         ["Feet"] = { { id = 250062, name = "Voidbreaker's Treads" }, { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 249369, name = "Bond of Light" } },
+                        ["Finger2"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 250144, name = "Emberwing Feather" } },
+                        ["Trinket2"] = { { id = 249346, name = "Vaelgor's Final Stare" } },
                     },
                 },
             },
         },
         ["Frost"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/frost-mage-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -1159,7 +1206,7 @@ BuildViewerData = {
     ["Monk"] = {
         ["Brewmaster"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
@@ -1175,7 +1222,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 151314, name = "Shifting Stalker Hide Pants" } },
                         ["Feet"] = { { id = 151317, name = "Footpads of Seeping Dread" } },
+                        ["Finger1"] = { { id = 249336, name = "Signet of the Starved Beast" } },
+                        ["Finger2"] = { { id = 251513, name = "Loa Worshiper's Band" } },
                         ["MainHand"] = { { id = 251207, name = "Dreadflail Bludgeon" }, { id = 251175, name = "Soulblight Cleaver" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249343, name = "Gaze of the Alnseer" }, { id = 249339, name = "Gloom-Spattered Dreadscale" }, { id = 151312, name = "Ampoule of Pure Void" } },
                     },
                 },
                 ["Raid"] = {
@@ -1191,7 +1241,10 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 151314, name = "Shifting Stalker Hide Pants" } },
                         ["Feet"] = { { id = 151317, name = "Footpads of Seeping Dread" } },
+                        ["Finger1"] = { { id = 249336, name = "Signet of the Starved Beast" } },
+                        ["Finger2"] = { { id = 251513, name = "Loa Worshiper's Band" } },
                         ["MainHand"] = { { id = 251207, name = "Dreadflail Bludgeon" }, { id = 251175, name = "Soulblight Cleaver" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249343, name = "Gaze of the Alnseer" }, { id = 249339, name = "Gloom-Spattered Dreadscale" }, { id = 151312, name = "Ampoule of Pure Void" } },
                     },
                 },
                 ["Mythic+"] = {
@@ -1207,14 +1260,17 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 151314, name = "Shifting Stalker Hide Pants" } },
                         ["Feet"] = { { id = 151317, name = "Footpads of Seeping Dread" } },
+                        ["Finger1"] = { { id = 249336, name = "Signet of the Starved Beast" } },
+                        ["Finger2"] = { { id = 251513, name = "Loa Worshiper's Band" } },
                         ["MainHand"] = { { id = 251207, name = "Dreadflail Bludgeon" }, { id = 251175, name = "Soulblight Cleaver" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 249343, name = "Gaze of the Alnseer" }, { id = 249339, name = "Gloom-Spattered Dreadscale" }, { id = 151312, name = "Ampoule of Pure Void" } },
                     },
                 },
             },
         },
         ["Mistweaver"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/mistweaver-monk-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
@@ -1281,11 +1337,11 @@ BuildViewerData = {
         },
         ["Windwalker"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "C0QAi6cZM+HWADeySjzG9Lwx8PzMD2GGsMzMbzAAAAAAAAAAAAsMMCzYbYAzYYmZmhZZYGmlZCAYzMbzMMmZGIA2AQzys0MzMLAYgZGAYZMgBM",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237845, name = "Bloomforged Claw" } },
                         ["Head"] = { { id = 250015, name = "Fearsome Visage of Ra-den's Chosen" } },
@@ -1298,10 +1354,13 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 250014, name = "Swiftsweepers of Ra-den's Chosen" } },
                         ["Feet"] = { { id = 250017, name = "Storm Crashers of Ra-den's Chosen" } },
+                        ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "C0QAi6cZM+HWADeySjzG9Lwx8PzMD2GGsMzMbzAAAAAAAAAAAAsMMCzYbYAzYYmZmhZZYGmlZCAYzMbzMMmZGIA2AQzys0MzMLAYgZGAYZMgBM",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237845, name = "Bloomforged Claw" } },
                         ["Head"] = { { id = 250015, name = "Fearsome Visage of Ra-den's Chosen" } },
@@ -1314,10 +1373,13 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 250014, name = "Swiftsweepers of Ra-den's Chosen" } },
                         ["Feet"] = { { id = 250017, name = "Storm Crashers of Ra-den's Chosen" } },
+                        ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "C0QAAAAAAAAAAAAAAAAAAAAAAMzYMghZZmZ2mxAAAAAAAAAAAALDzEmxywAmxwMzMDz2wMMLzEAwmZ2GDjZmBAwGAMLzSzMzsAMMwMDAswQMgB",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237845, name = "Bloomforged Claw" } },
                         ["Head"] = { { id = 250015, name = "Fearsome Visage of Ra-den's Chosen" } },
@@ -1330,6 +1392,9 @@ BuildViewerData = {
                         ["Waist"] = { { id = 251082, name = "Snapvine Cinch" } },
                         ["Legs"] = { { id = 250014, name = "Swiftsweepers of Ra-den's Chosen" } },
                         ["Feet"] = { { id = 250017, name = "Storm Crashers of Ra-den's Chosen" } },
+                        ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
             },
@@ -1338,7 +1403,7 @@ BuildViewerData = {
     ["Paladin"] = {
         ["Holy"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/holy-paladin-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
@@ -1408,11 +1473,11 @@ BuildViewerData = {
         },
         ["Protection"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/protection-paladin-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CIEAAAAAAAAAAAAAAAAAAAAAAsNzMYWGLjZMjZbZMzwsMbzYAAGAAAAAA00MDzYmhxMbtBgBAMYbAAgZm2mZWmBAYzADYwYGGDAwyMgZmBMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249295, name = "Turalyon's False Echo" } },
                         ["OffHand"] = { { id = 249275, name = "Bulwark of Noble Resolve" } },
@@ -1433,7 +1498,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CIEAAAAAAAAAAAAAAAAAAAAAAsNzMYWGLjZMjZbZMzwsMbzYAAGAAAAAA00MDzYmhxMbtBgBAMYbAAgZm2mZWmBAYzADYwYGGDAwyMgZmBMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249295, name = "Turalyon's False Echo" } },
                         ["OffHand"] = { { id = 249275, name = "Bulwark of Noble Resolve" } },
@@ -1454,7 +1519,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CIEAAAAAAAAAAAAAAAAAAAAAAsNj5BYWmHYZMjZmZZZMzwsYZGDAAAAAAAA00MziZMzwwsFAMgBMYbAAgZm2mZWmBAYzMYAwYGGDAwyMgZmBMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249295, name = "Turalyon's False Echo" } },
                         ["OffHand"] = { { id = 249275, name = "Bulwark of Noble Resolve" } },
@@ -1478,7 +1543,7 @@ BuildViewerData = {
         },
         ["Retribution"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -1547,11 +1612,11 @@ BuildViewerData = {
     ["Priest"] = {
         ["Discipline"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/discipline-priest-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "OracleRaidVoidweaverRaidVoidweaverMythic+OracleMythic+VoidweaverDelves",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245769, name = "Aln'hara Lantern" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1571,7 +1636,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "OracleRaidVoidweaverRaidVoidweaverMythic+OracleMythic+VoidweaverDelves",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245769, name = "Aln'hara Lantern" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1591,7 +1656,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CAQAAAAAAAAAAAAAAAAAAAAAAADsMGWmZMYGmZbmtZmZmxMDAAAAAAAAAgZYZGMzMDzwMwMNTzMAzsghwYWGgxgFAAYMmZMYGgZmBYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 245769, name = "Aln'hara Lantern" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1614,7 +1679,7 @@ BuildViewerData = {
         },
         ["Holy"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/holy-priest-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
@@ -1630,6 +1695,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 249323, name = "Leggings of the Devouring Advance" } },
                         ["Feet"] = { { id = 251167, name = "Nightprey Stalkers" } },
+                        ["Finger1"] = { { id = 151308, name = "Eredath Seal of Nobility" } },
+                        ["Trinket1"] = { { id = 249808, name = "Litany of Lightblind Wrath" }, { id = 249809, name = "Locus-Walker's Ribbon" }, { id = 249343, name = "Gaze of the Alnseer" } },
                     },
                 },
                 ["Raid"] = {
@@ -1645,6 +1712,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 249323, name = "Leggings of the Devouring Advance" } },
                         ["Feet"] = { { id = 251167, name = "Nightprey Stalkers" } },
+                        ["Finger1"] = { { id = 151308, name = "Eredath Seal of Nobility" } },
+                        ["Trinket1"] = { { id = 249808, name = "Litany of Lightblind Wrath" }, { id = 249809, name = "Locus-Walker's Ribbon" }, { id = 249343, name = "Gaze of the Alnseer" } },
                     },
                 },
                 ["Mythic+"] = {
@@ -1660,17 +1729,19 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 249323, name = "Leggings of the Devouring Advance" } },
                         ["Feet"] = { { id = 251167, name = "Nightprey Stalkers" } },
+                        ["Finger1"] = { { id = 151308, name = "Eredath Seal of Nobility" } },
+                        ["Trinket1"] = { { id = 249808, name = "Litany of Lightblind Wrath" }, { id = 249809, name = "Locus-Walker's Ribbon" }, { id = 249343, name = "Gaze of the Alnseer" } },
                     },
                 },
             },
         },
         ["Shadow"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/shadow-priest-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CIQAAAAAAAAAAAAAAAAAAAAAAMMjZGAAAAAAAAAAAgxMMjxyMDzsNzwMsNzMmZmxGyMWMTDwMAzsZGmNDAZMWAwMAjZmZMbjZ2WGgZwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249283, name = "Belo'melorn, the Shattered Talon" }, { id = 249922, name = "Tome of Alnscorned Regret" }, { id = 249286, name = "Brazier of the Dissonant Dirge" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1683,10 +1754,12 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 250050, name = "Blind Oath's Leggings" } },
                         ["Feet"] = { { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 251093, name = "Omission of Light" }, { id = 249920, name = "Eye of Midnight" }, { id = 251115, name = "Bifurcation Band" }, { id = 251217, name = "Occlusion of Void" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" }, { id = 250223, name = "Soulcatcher's Charm" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 249810, name = "Shadow of the Empyrean Requiem" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "CIQAAAAAAAAAAAAAAAAAAAAAAMMjZGAAAAAAAAAAAgxMMjxyMDzsNzwMsNzMmZmxGyMWMTDwMAzsZGmNDAZMWAwMAjZmZMbjZ2WGgZwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249283, name = "Belo'melorn, the Shattered Talon" }, { id = 249922, name = "Tome of Alnscorned Regret" }, { id = 249286, name = "Brazier of the Dissonant Dirge" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1699,10 +1772,12 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 250050, name = "Blind Oath's Leggings" } },
                         ["Feet"] = { { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 251093, name = "Omission of Light" }, { id = 249920, name = "Eye of Midnight" }, { id = 251115, name = "Bifurcation Band" }, { id = 251217, name = "Occlusion of Void" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" }, { id = 250223, name = "Soulcatcher's Charm" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 249810, name = "Shadow of the Empyrean Requiem" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CIQAAAAAAAAAAAAAAAAAAAAAAMMjZGAAAAAAAAAAAgxYxMGLzMMz2MDzw2MzYmZGbIzYxMNAzAMzmZY2MAkxYBAzAZMzMjZbMz2yAMTMA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 249283, name = "Belo'melorn, the Shattered Talon" }, { id = 249922, name = "Tome of Alnscorned Regret" }, { id = 249286, name = "Brazier of the Dissonant Dirge" } },
                         ["Head"] = { { id = 250051, name = "Blind Oath's Winged Crest" } },
@@ -1715,6 +1790,8 @@ BuildViewerData = {
                         ["Waist"] = { { id = 239664, name = "Arcanoweave Cord" } },
                         ["Legs"] = { { id = 250050, name = "Blind Oath's Leggings" } },
                         ["Feet"] = { { id = 258584, name = "Lightbinder Treads" } },
+                        ["Finger1"] = { { id = 251093, name = "Omission of Light" }, { id = 249920, name = "Eye of Midnight" }, { id = 251115, name = "Bifurcation Band" }, { id = 251217, name = "Occlusion of Void" } },
+                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" }, { id = 250223, name = "Soulcatcher's Charm" }, { id = 249346, name = "Vaelgor's Final Stare" }, { id = 249810, name = "Shadow of the Empyrean Requiem" } },
                     },
                 },
             },
@@ -1723,11 +1800,11 @@ BuildViewerData = {
     ["Rogue"] = {
         ["Assassination"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/assassination-rogue-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CMQAAAAAAAAAAAAAAAAAAAAAAYmZMbzgBAAAAAmlBLzAAAAAAabbmZmZmZMmZmZ2mZZmZGMmZmZMzYYAMwCMjRjZBwyA2MAYmZwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1747,7 +1824,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CMQAAAAAAAAAAAAAAAAAAAAAAYmZMbzgBAAAAAmlBLzAAAAAAabbmZmZmZMmZmZ2mZZmZGMmZmZMzYYAMwCMjRjZBwyA2MAYmZwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1767,7 +1844,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CMQAAAAAAAAAAAAAAAAAAAAAAYmZMbGMAAAAAwsMYZGAAAAAQbbzMzMzMjxMzMz2MLzMzgZmZmZMzwYAMwCMjRjZBwyA2MAYmZwA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1790,11 +1867,11 @@ BuildViewerData = {
         },
         ["Outlaw"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/outlaw-rogue-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CQQAAAAAAAAAAAAAAAAAAAAAAAgx2MGjZMzsNzMzMjHwswDMzMLTLD2mBAAAAAMbbzMzwMzMzYmZWGAAAAGADsBzY0Y2AsNwCDAmZGYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 133491, name = "Krick's Beetle Stabber" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -1814,7 +1891,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CQQAAAAAAAAAAAAAAAAAAAAAAAgx2MGjZMzsNzMzMjHwswDMzMLTLD2mBAAAAAMbbzMzwMzMzYmZWGAAAAGADsBzY0Y2AsNwCDAmZGYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 133491, name = "Krick's Beetle Stabber" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -1834,7 +1911,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CQQAAAAAAAAAAAAAAAAAAAAAAAgx2MGjZMzsNzMzY8AmNegZmZZaZw2MAAAAAgZbbmZGmZmZGzMzyAAAAwYAwY2MMwAzCL0GbMAzMYgB",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 133491, name = "Krick's Beetle Stabber" } },
                         ["Head"] = { { id = 151336, name = "Voidlashed Hood" } },
@@ -1857,11 +1934,11 @@ BuildViewerData = {
         },
         ["Subtlety"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/subtlety-rogue-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CUQAAAAAAAAAAAAAAAAAAAAAAAgx2MAAAAAwsMGLTMbbjxMjZwDMzMzYMbjZmZbbMzMzMjBjZWGAAAAGMGwY2MMwAziWoFbwAmZwMzA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1881,7 +1958,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CUQAAAAAAAAAAAAAAAAAAAAAAAgx2MAAAAAwsMGLTMbbjxMjZwDMzMzYMbjZmZbbMzMzMjBjZWGAAAAGMGwY2MMwAziWoFbwAmZwMzA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1901,7 +1978,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CUQAAAAAAAAAAAAAAAAAAAAAAAgx2MAAAAAwsMGLTMbbjxMjZwDMzMzYMbjZmZbbMzMzMjBjZWGAAAAGMGwY2MMwAziWoFbwAmZwMzA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237837, name = "Farstrider's Mercy" }, { id = 245876, name = "Darkmoon Sigil: Hunt" } },
                         ["Head"] = { { id = 250006, name = "Masquerade of the Grim Jest" } },
@@ -1926,7 +2003,7 @@ BuildViewerData = {
     ["Shaman"] = {
         ["Elemental"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/elemental-shaman-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -1993,11 +2070,11 @@ BuildViewerData = {
         },
         ["Enhancement"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/enhancement-shaman-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CcQAAAAAAAAAAAAAAAAAAAAAAMzMjZmZmZmZmZmZmZGAAAAAAAAAYB2gZsox2AYGwGAzyMmZGLLzAzMbsMzMzwwYGAADwYmJmZAgxA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237850, name = "Farstrider's Chopper" } },
                         ["Head"] = { { id = 249979, name = "Locus of the Primal Core" } },
@@ -2012,12 +2089,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 251084, name = "Whipcoil Sabatons" } },
                         ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
                         ["Finger2"] = { { id = 251093, name = "Omission of Light" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 250144, name = "Emberwing Feather" }, { id = 252420, name = "Solarflare Prism" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Raid"] = {
-                    talents = "CcQAAAAAAAAAAAAAAAAAAAAAAMzMjZmZmZmZmZmZmZGAAAAAAAAAYB2gZsox2AYGwGAzyMmZGLLzAzMbsMzMzwwYGAADwYmJmZAgxA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237850, name = "Farstrider's Chopper" } },
                         ["Head"] = { { id = 249979, name = "Locus of the Primal Core" } },
@@ -2032,12 +2109,12 @@ BuildViewerData = {
                         ["Feet"] = { { id = 251084, name = "Whipcoil Sabatons" } },
                         ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
                         ["Finger2"] = { { id = 251093, name = "Omission of Light" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 250144, name = "Emberwing Feather" }, { id = 252420, name = "Solarflare Prism" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CcQAAAAAAAAAAAAAAAAAAAAAAMzMjZmZmZmZmZmZGzAAAAAAAAAALwGMjFN2GAzA2AYWmxMGLLGYmZbsMzMzMYZMDAAwYMjYmBYwYA",
+                    talents = "",
                     gear    = {
                         ["MainHand"] = { { id = 237850, name = "Farstrider's Chopper" } },
                         ["Head"] = { { id = 249979, name = "Locus of the Primal Core" } },
@@ -2052,7 +2129,7 @@ BuildViewerData = {
                         ["Feet"] = { { id = 251084, name = "Whipcoil Sabatons" } },
                         ["Finger1"] = { { id = 249920, name = "Eye of Midnight" } },
                         ["Finger2"] = { { id = 251093, name = "Omission of Light" } },
-                        ["Trinket1"] = { { id = 249343, name = "Gaze of the Alnseer" } },
+                        ["Trinket1"] = { { id = 249806, name = "Radiant Plume" }, { id = 250144, name = "Emberwing Feather" }, { id = 252420, name = "Solarflare Prism" }, { id = 250256, name = "Heart of Wind" } },
                         ["Trinket2"] = { { id = 193701, name = "Algeth'ar Puzzle Box" } },
                     },
                 },
@@ -2060,7 +2137,7 @@ BuildViewerData = {
         },
         ["Restoration"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/restoration-shaman-pve-healing-guide",
             builds  = {
                 ["Overall"] = {
@@ -2129,7 +2206,7 @@ BuildViewerData = {
     ["Warlock"] = {
         ["Affliction"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/affliction-warlock-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -2196,7 +2273,7 @@ BuildViewerData = {
         },
         ["Demonology"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/demonology-warlock-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -2263,7 +2340,7 @@ BuildViewerData = {
         },
         ["Destruction"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/destruction-warlock-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -2332,7 +2409,7 @@ BuildViewerData = {
     ["Warrior"] = {
         ["Arms"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/arms-warrior-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -2399,7 +2476,7 @@ BuildViewerData = {
         },
         ["Fury"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/fury-warrior-pve-dps-guide",
             builds  = {
                 ["Overall"] = {
@@ -2466,11 +2543,11 @@ BuildViewerData = {
         },
         ["Protection"] = {
             summary = "Consulte Icy Veins.",
-            stats   = {},
+            stats   = {  },
             url     = "https://www.icy-veins.com/wow/protection-warrior-pve-tank-guide",
             builds  = {
                 ["Overall"] = {
-                    talents = "CkEAAAAAAAAAAAAAAAAAAAAAA02AAAzMDzMzMzMzmxsMjxYmGGDLzMzMDGzMAAAAYZAYGDwAbwyiRjZAMbYmNYGzMY2GAMzAAwMgB",
+                    talents = "",
                     gear    = {
                         ["Head"] = { { id = 249952, name = "Night Ender's Tusks" } },
                         ["Neck"] = { { id = 249368, name = "Eternal Voidsong Chain" } },
@@ -2491,7 +2568,7 @@ BuildViewerData = {
                     },
                 },
                 ["Raid"] = {
-                    talents = "CkEAAAAAAAAAAAAAAAAAAAAAA02AAAzMDzMzMzMzmxsMjxYmGGDLzMzMDGzMAAAAYZAYGDwAbwyiRjZAMbYmNYGzMY2GAMzAAwMgB",
+                    talents = "",
                     gear    = {
                         ["Head"] = { { id = 249952, name = "Night Ender's Tusks" } },
                         ["Neck"] = { { id = 249368, name = "Eternal Voidsong Chain" } },
@@ -2512,7 +2589,7 @@ BuildViewerData = {
                     },
                 },
                 ["Mythic+"] = {
-                    talents = "CkEAAAAAAAAAAAAAAAAAAAAAA0yAAAzMjZmZmZGzmxsMjxYmGGDLzMzMDGzMAAAAYZAYGDAsZGDbkBmhFaMzCMjZGMbDAwMDAYGwA",
+                    talents = "",
                     gear    = {
                         ["Head"] = { { id = 249952, name = "Night Ender's Tusks" } },
                         ["Neck"] = { { id = 249368, name = "Eternal Voidsong Chain" } },
