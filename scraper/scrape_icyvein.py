@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 """
-scrape_icyvein.py
-=================
-Descarga las guías de builds de Icy Veins para WoW retail y genera
-el archivo data/Builds.lua que usa el addon BuildViewer.
-
-Uso:
-    pip install requests beautifulsoup4 lxml
-    python scraper/scrape_icyvein.py
-
-El archivo data/Builds.lua se sobreescribe con los datos frescos.
+scrape_icyvein.py v2.1
+======================
+Extracción avanzada de builds:
+- Soporte para contextos: Overall, Raid, Mythic+
+- Extracción de Talent Strings desde páginas específicas.
+- Extracción de BiS Gear (Best in Slot) categorizado.
 """
 
 import re
@@ -33,11 +29,8 @@ HEADERS = {
     )
 }
 
-# Delay entre peticiones para no sobrecargar el servidor (segundos)
-REQUEST_DELAY = 1.5
+REQUEST_DELAY = 1.0
 
-# Mapa de clase → spec → URL de la guía en Icy Veins
-# Actualiza estas URLs si Icy Veins cambia la estructura para una nueva expansión.
 GUIDES = {
     "Death Knight": {
         "Blood":  "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
@@ -107,219 +100,187 @@ GUIDES = {
 }
 
 # ─────────────────────────────────────────────────────────
-#  FUNCIONES DE SCRAPING
+#  FUNCIONES DE APOYO
 # ─────────────────────────────────────────────────────────
 
 def fetch_page(url: str) -> BeautifulSoup | None:
-    """Descarga una página y devuelve un objeto BeautifulSoup."""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         return BeautifulSoup(resp.text, "lxml")
-    except requests.RequestException as e:
-        print(f"  ERROR al descargar {url}: {e}")
+    except Exception as e:
+        print(f"  ERROR: {e}")
         return None
 
+def clean_text(text: str) -> str:
+    return re.sub(r'\s+', ' ', text).strip()
 
 def extract_summary(soup: BeautifulSoup) -> str:
-    """
-    Extrae el párrafo de introducción/resumen de la guía.
-    Icy Veins suele tener el resumen en el primer párrafo de la sección
-    con id 'introduction' o dentro del primer <p> del article.
-    """
-    # Intentar la sección de introducción
     intro_section = soup.find(id="introduction")
     if intro_section:
         p = intro_section.find_next("p")
-        if p:
-            return p.get_text(strip=True)
-
-    # Fallback: primer párrafo del article principal
+        if p: return p.get_text(strip=True)
     article = soup.find("article") or soup.find("div", class_="content")
     if article:
         p = article.find("p")
-        if p:
-            return p.get_text(strip=True)
-
-    return "Consulta la guía en Icy Veins para el resumen completo."
-
+        if p: return p.get_text(strip=True)
+    return "Consulte Icy Veins."
 
 def extract_stats(soup: BeautifulSoup) -> list[str]:
-    """
-    Extrae la prioridad de estadísticas de la guía.
-    Icy Veins suele listarlas en una sección con id 'stat-priority'
-    o en una lista ordenada (<ol>) cerca de esa sección.
-    """
     stats = []
-
-    # Buscar la sección de stats
     section = soup.find(id="stat-priority") or soup.find(id="stats")
     if section:
-        # Buscar lista ordenada (ol) o desordenada (ul) cercana
         ol = section.find_next(["ol", "ul"])
         if ol:
             for li in ol.find_all("li", limit=6):
-                text = li.get_text(strip=True)
-                # Limpiar texto (quitar notas entre paréntesis largas)
-                text = re.sub(r"\s*\(.*?\)", "", text).strip()
-                if text:
-                    stats.append(text)
-
-    # Fallback: buscar en el texto "stat priority" con regex
+                text = re.sub(r"\s*\(.*?\)", "", li.get_text(strip=True)).strip()
+                if text: stats.append(text)
     if not stats:
         text = soup.get_text()
-        match = re.search(
-            r"stat priority[:\s]+([A-Za-z ,>≥=]+?)(?:\n|\.|;)",
-            text,
-            re.IGNORECASE,
-        )
+        match = re.search(r"stat priority[:\s]+([A-Za-z ,>≥=]+?)(?:\n|\.|;)", text, re.IGNORECASE)
         if match:
-            raw = match.group(1)
-            stats = [s.strip() for s in re.split(r"[,>]", raw) if s.strip()]
+            stats = [s.strip() for s in re.split(r"[,>]", match.group(1)) if s.strip()]
+    return stats[:6]
 
-    return stats[:6]  # máximo 6 stats
+# ─────────────────────────────────────────────────────────
+#  EXTRACCIÓN DE TALENTOS
+# ─────────────────────────────────────────────────────────
 
-
-def extract_talents(soup: BeautifulSoup) -> str:
-    """
-    Busca un talent string importable (cadena larga en base64-like).
-    En Icy Veins, estos suelen aparecer en bloques <code> o <textarea>
-    cerca de la sección de talentos.
-    """
-    # Buscar la sección de talentos
-    talent_section = (
-        soup.find(id="talent-builds")
-        or soup.find(id="talents")
-        or soup.find(id="builds")
-    )
-
-    search_root = talent_section or soup
-
-    # Buscar en elementos <code>, <textarea>, o divs con clase específica
-    for tag in search_root.find_all(["code", "textarea", "span", "div"], limit=30):
-        text = tag.get_text(strip=True)
-        # Un talent string de WoW tiene ~60-80 caracteres alfanuméricos+/+=
-        if re.fullmatch(r"[A-Za-z0-9+/=]{50,120}", text):
-            return text
-
-    return ""
-
-
-def extract_gems_enchants(soup: BeautifulSoup) -> tuple[str, str]:
-    """
-    Extrae información de gemas y encantamientos.
-    """
-    gems = ""
-    enchants = ""
-
-    gem_section = soup.find(id="gems") or soup.find(id="gemming")
-    if gem_section:
-        p = gem_section.find_next("p")
-        if p:
-            gems = p.get_text(strip=True)[:200]
-
-    enchant_section = soup.find(id="enchants") or soup.find(id="enchanting")
-    if enchant_section:
-        p = enchant_section.find_next("p")
-        if p:
-            enchants = p.get_text(strip=True)[:200]
-
-    return gems, enchants
-
-
-def scrape_guide(url: str) -> dict:
-    """Descarga y parsea una guía de Icy Veins. Devuelve un dict con los datos."""
-    print(f"  -> {url}")
+def extract_talents_from_page(url: str) -> dict:
+    data = {"Overall": "", "Raid": "", "Mythic+": ""}
     soup = fetch_page(url)
-    if not soup:
-        return {
-            "summary": "No se pudo cargar la guía.",
-            "talents": "",
-            "stats": [],
-            "gems": "",
-            "enchants": "",
-            "url": url,
-        }
+    if not soup: return data
 
-    summary  = extract_summary(soup)
-    stats    = extract_stats(soup)
-    talents  = extract_talents(soup)
-    gems, enchants = extract_gems_enchants(soup)
+    all_strings = []
+    # Usar regex para encontrar strings de talentos válidos
+    pattern = re.compile(r"[A-Za-z0-9+/=]{50,1000}")
+    
+    # Buscar en elementos con clases comunes de Icy Veins
+    for tag in soup.find_all(["code", "textarea", "span", "div"]):
+        text = tag.get_text(strip=True)
+        if pattern.fullmatch(text) and not text.startswith('Alchemy'):
+            all_strings.append(text)
+    
+    # Eliminar duplicados manteniendo orden
+    seen = set()
+    unique_strings = [x for x in all_strings if not (x in seen or seen.add(x))]
 
+    if not unique_strings: return data
+
+    data["Raid"] = unique_strings[0]
+    data["Overall"] = unique_strings[0]
+    if len(unique_strings) > 1:
+        data["Mythic+"] = unique_strings[1]
+    else:
+        data["Mythic+"] = unique_strings[0]
+        
+    return data
+
+# ─────────────────────────────────────────────────────────
+#  EXTRACCIÓN DE EQUIPO (BiS)
+# ─────────────────────────────────────────────────────────
+
+def extract_gear_table(soup: BeautifulSoup) -> str:
+    table = soup.find("table")
+    if not table: return ""
+    
+    rows = []
+    for tr in table.find_all("tr"):
+        cols = tr.find_all(["td", "th"])
+        if len(cols) >= 2:
+            slot = clean_text(cols[0].get_text())
+            item = clean_text(cols[1].get_text())
+            if slot and item and slot.lower() != "slot":
+                rows.append(f"{slot}: {item}")
+    
+    return "\n".join(rows)
+
+def fetch_bis_gear(base_url: str) -> dict:
+    gear_url = base_url.replace("-guide", "-gear-best-in-slot")
+    # Limpiar posibles terminaciones de rol
+    results = {"Overall": "", "Raid": "", "Mythic+": ""}
+    
+    areas = {
+        "Overall":  gear_url + "?area=area_1",
+        "Raid":     gear_url + "?area=area_2",
+        "Mythic+":  gear_url + "?area=area_3"
+    }
+    
+    for context, url in areas.items():
+        print(f"    - Fetching gear {context}...")
+        soup = fetch_page(url)
+        if soup:
+            results[context] = extract_gear_table(soup)
+        time.sleep(0.3)
+            
+    return results
+
+# ─────────────────────────────────────────────────────────
+#  PROCESAMIENTO DE ESPECIFICACIÓN
+# ─────────────────────────────────────────────────────────
+
+def process_spec(class_name, spec_name, main_url):
+    print(f"--- [{class_name}] {spec_name} ---")
+    
+    soup_main = fetch_page(main_url)
+    summary = "Consulte Icy Veins."
+    stats = []
+    if soup_main:
+        summary = extract_summary(soup_main)
+        stats = extract_stats(soup_main)
+    
+    talents_url = main_url.replace("-guide", "-spec-builds-talents")
+    print(f"  -> {talents_url}")
+    talents_data = extract_talents_from_page(talents_url)
+    
+    print(f"  -> Gear Search...")
+    gear_data = fetch_bis_gear(main_url)
+    
     return {
-        "summary":  summary,
-        "talents":  talents,
-        "stats":    stats,
-        "gems":     gems,
-        "enchants": enchants,
-        "url":      url,
+        "summary": summary,
+        "stats": stats,
+        "url": main_url,
+        "builds": {
+            "Overall":  {"talents": talents_data["Overall"],  "gear": gear_data["Overall"]},
+            "Raid":     {"talents": talents_data["Raid"],     "gear": gear_data["Raid"]},
+            "Mythic+":  {"talents": talents_data["Mythic+"], "gear": gear_data["Mythic+"]},
+        }
     }
 
 # ─────────────────────────────────────────────────────────
-#  GENERACIÓN DEL ARCHIVO LUA
+#  GENERACIÓN LUA
 # ─────────────────────────────────────────────────────────
 
-def escape_lua_string(s: str) -> str:
-    """Escapa una cadena para usarla de forma segura dentro de [[...]] o comillas Lua."""
-    if s is None:
-        return ""
-    # Usar long strings de Lua [[ ]] para evitar problemas con comillas y backslashes.
-    # Si la cadena contiene ]] tenemos que usar un nivel: [=[ ... ]=]
-    if "]]" in s:
-        return s.replace("\\", "\\\\").replace('"', '\\"')
-    return s
-
-
-def lua_string(s: str) -> str:
-    """Envuelve una cadena en comillas Lua escapando lo necesario."""
-    s = (s or "").replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
-    return f'"{s}"'
-
-
-def lua_string_list(items: list[str]) -> str:
-    """Convierte una lista de strings a una tabla Lua: { "a", "b", "c" }"""
-    escaped = [lua_string(i) for i in items]
-    return "{ " + ", ".join(escaped) + " }"
-
-
-def build_lua_file(data: dict) -> str:
-    """Genera el contenido completo del archivo Builds.lua."""
+def build_lua_file(data):
     today = datetime.date.today().isoformat()
     lines = [
-        "-- BuildViewerData: datos de builds de Icy Veins embebidos como tablas Lua.",
-        "-- Este archivo es generado automáticamente por scraper/scrape_icyvein.py",
+        "-- BuildViewerData v2.1",
         f"-- Última actualización: {today}",
-        "--",
-        "-- Estructura:",
-        "--   BuildViewerData[clase][spec] = {",
-        "--     summary  = string,",
-        "--     talents  = string,   -- talent string importable en WoW",
-        "--     stats    = { string, ... },",
-        "--     gems     = string,",
-        "--     enchants = string,",
-        "--     url      = string,",
-        "--   }",
-        "",
         "BuildViewerData = {",
     ]
+    
+    def lua_str(s):
+        s = (s or "").replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        return f'"{s}"'
 
-    for class_name in sorted(data.keys()):
-        specs = data[class_name]
-        lines.append(f'    [{lua_string(class_name)}] = {{')
-        for spec_name in sorted(specs.keys()):
-            build = specs[spec_name]
-            lines.append(f'        [{lua_string(spec_name)}] = {{')
-            lines.append(f'            summary  = {lua_string(build.get("summary", ""))},')
-            lines.append(f'            talents  = {lua_string(build.get("talents", ""))},')
-            lines.append(f'            stats    = {lua_string_list(build.get("stats", []))},')
-            lines.append(f'            gems     = {lua_string(build.get("gems", ""))},')
-            lines.append(f'            enchants = {lua_string(build.get("enchants", ""))},')
-            lines.append(f'            url      = {lua_string(build.get("url", ""))},')
+    for cls in sorted(data.keys()):
+        lines.append(f'    [{lua_str(cls)}] = {{')
+        for spec in sorted(data[cls].keys()):
+            build = data[cls][spec]
+            lines.append(f'        [{lua_str(spec)}] = {{')
+            lines.append(f'            summary = {lua_str(build["summary"])},')
+            lines.append(f'            stats   = {{' + ", ".join([lua_str(s) for s in build["stats"]]) + '},')
+            lines.append(f'            url     = {lua_str(build["url"])},')
+            lines.append(f'            builds  = {{')
+            for ctx, b in build["builds"].items():
+                lines.append(f'                [{lua_str(ctx)}] = {{')
+                lines.append(f'                    talents = {lua_str(b["talents"])},')
+                lines.append(f'                    gear    = {lua_str(b["gear"])},')
+                lines.append(f'                }},')
+            lines.append(f'            }},')
             lines.append(f'        }},')
         lines.append(f'    }},')
-
     lines.append("}")
-    lines.append("")
     return "\n".join(lines)
 
 # ─────────────────────────────────────────────────────────
@@ -327,34 +288,16 @@ def build_lua_file(data: dict) -> str:
 # ─────────────────────────────────────────────────────────
 
 def main():
-    print("=" * 60)
-    print("BuildViewer — Scraper de Icy Veins")
-    print("=" * 60)
-    print(f"Output: {OUTPUT_FILE}")
-    print()
-
     all_data = {}
-
-    for class_name, specs in GUIDES.items():
-        print(f"[{class_name}]")
-        all_data[class_name] = {}
-        for spec_name, url in specs.items():
-            build_data = scrape_guide(url)
-            all_data[class_name][spec_name] = build_data
+    for cls, specs in GUIDES.items():
+        all_data[cls] = {}
+        for spec, url in specs.items():
+            all_data[cls][spec] = process_spec(cls, spec, url)
             time.sleep(REQUEST_DELAY)
-        print()
-
-    print("Generando Builds.lua...", end=" ")
+            
     lua_content = build_lua_file(all_data)
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_FILE.write_text(lua_content, encoding="utf-8")
-    print("OK")
-    print(f"\nArchivo generado: {OUTPUT_FILE}")
-    print("\nPróximos pasos:")
-    print("  1. Copia la carpeta BuildViewer/ a WoW\\Interface\\AddOns\\")
-    print("  2. Entra en el juego y escribe /reload")
-    print("  3. Escribe /bv para abrir el addon")
-
+    print("\n¡Proceso completado con éxito!")
 
 if __name__ == "__main__":
     main()

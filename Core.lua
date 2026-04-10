@@ -13,10 +13,11 @@ local BuildViewer = LibStub("AceAddon-3.0"):NewAddon(
 -- Esquema por defecto de la base de datos (valores guardados por personaje)
 local DB_DEFAULTS = {
     char = {
-        lastClass = nil,   -- última clase seleccionada
-        lastSpec  = nil,   -- última spec seleccionada
-        windowX   = nil,   -- posición X de la ventana
-        windowY   = nil,   -- posición Y de la ventana
+        lastClass   = nil,   -- última clase seleccionada
+        lastSpec    = nil,   -- última spec seleccionada
+        lastContext = "Overall", -- último contexto (Overall, Raid, Mythic+)
+        windowX     = nil,   -- posición X de la ventana
+        windowY     = nil,   -- posición Y de la ventana
     }
 }
 
@@ -111,14 +112,17 @@ function BuildViewer:FindCaseInsensitive(tbl, query)
 end
 
 -- Guarda la última clase/spec vista (llamado desde UI.lua)
-function BuildViewer:SaveLastSelection(className, specName)
+function BuildViewer:SaveLastSelection(className, specName, contextName)
     self.db.char.lastClass = className
     self.db.char.lastSpec  = specName
+    if contextName then
+        self.db.char.lastContext = contextName
+    end
 end
 
--- Devuelve la última clase/spec guardada
+-- Devuelve la última clase/spec/contexto guardada
 function BuildViewer:GetLastSelection()
-    return self.db.char.lastClass, self.db.char.lastSpec
+    return self.db.char.lastClass, self.db.char.lastSpec, self.db.char.lastContext
 end
 
 -- Guarda la posición de la ventana (llamado desde UI.lua)

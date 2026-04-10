@@ -1,6 +1,5 @@
 -- BuildViewer - UI.lua
--- Ventana principal del addon construida con AceGUI.
--- Expone BuildViewer_UI con métodos OpenWindow() y CloseWindow().
+-- Ventana principal v2.0 con soporte multicontexto (Raid, M+, Overall).
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -21,9 +20,9 @@ local COLOR_RESET    = "|r"
 --  HELPERS
 -- ─────────────────────────────────────────────
 
--- Devuelve una lista ordenada de las claves de una tabla
 local function sortedKeys(tbl)
     local keys = {}
+    if not tbl then return keys end
     for k in pairs(tbl) do
         table.insert(keys, k)
     end
@@ -31,7 +30,6 @@ local function sortedKeys(tbl)
     return keys
 end
 
--- Formatea la lista de stats como texto con colores
 local function formatStats(stats)
     if not stats or #stats == 0 then return "N/A" end
     local parts = {}
@@ -42,54 +40,52 @@ local function formatStats(stats)
 end
 
 -- Construye el texto completo de un build para mostrarlo en el ScrollFrame
-local function buildText(className, specName)
-    local data = BuildViewerData[className] and BuildViewerData[className][specName]
-    if not data then
+local function buildText(className, specName, contextName)
+    local specData = BuildViewerData[className] and BuildViewerData[className][specName]
+    if not specData then
         return "No hay datos disponibles para " .. (className or "?") .. " - " .. (specName or "?")
+    end
+
+    local contextData = specData.builds and specData.builds[contextName]
+    if not contextData then
+        return "No hay datos para el contexto: " .. (contextName or "?")
     end
 
     local lines = {}
 
     -- Cabecera
-    table.insert(lines, COLOR_TITLE .. "═══ " .. className .. " — " .. specName .. " ═══" .. COLOR_RESET)
+    table.insert(lines, COLOR_TITLE .. "══ " .. className .. " (" .. specName .. ") - " .. contextName .. " ══" .. COLOR_RESET)
     table.insert(lines, "")
 
     -- Resumen
     table.insert(lines, COLOR_HEADER .. "Resumen:" .. COLOR_RESET)
-    -- Partir el resumen en líneas de ~80 caracteres para que no se salga
-    local summary = data.summary or "Sin resumen."
-    table.insert(lines, summary)
+    table.insert(lines, specData.summary or "Sin resumen.")
     table.insert(lines, "")
 
     -- Prioridad de stats
     table.insert(lines, COLOR_HEADER .. "Prioridad de stats:" .. COLOR_RESET)
-    table.insert(lines, formatStats(data.stats))
+    table.insert(lines, formatStats(specData.stats))
     table.insert(lines, "")
 
-    -- Gemas
-    if data.gems and data.gems ~= "" then
-        table.insert(lines, COLOR_HEADER .. "Gemas:" .. COLOR_RESET)
-        table.insert(lines, COLOR_VALUE .. (data.gems or "N/A") .. COLOR_RESET)
-        table.insert(lines, "")
+    -- Gear (BiS)
+    table.insert(lines, COLOR_HEADER .. "Equipamiento Best in Slot (BIS):" .. COLOR_RESET)
+    if contextData.gear and contextData.gear ~= "" then
+        table.insert(lines, COLOR_VALUE .. contextData.gear .. COLOR_RESET)
+    else
+        table.insert(lines, "No hay datos de equipo para este contexto.")
     end
-
-    -- Encantamientos
-    if data.enchants and data.enchants ~= "" then
-        table.insert(lines, COLOR_HEADER .. "Encantamientos:" .. COLOR_RESET)
-        table.insert(lines, COLOR_VALUE .. (data.enchants or "N/A") .. COLOR_RESET)
-        table.insert(lines, "")
-    end
+    table.insert(lines, "")
 
     -- Talent string
-    if data.talents and data.talents ~= "" then
-        table.insert(lines, COLOR_HEADER .. "Talent string (importar en el árbol de talentos):" .. COLOR_RESET)
-        table.insert(lines, COLOR_VALUE .. (data.talents or "N/A") .. COLOR_RESET)
+    if contextData.talents and contextData.talents ~= "" then
+        table.insert(lines, COLOR_HEADER .. "Talent string (Importar):" .. COLOR_RESET)
+        table.insert(lines, COLOR_VALUE .. contextData.talents .. COLOR_RESET)
         table.insert(lines, "")
     end
 
     -- Fuente
     table.insert(lines, COLOR_HEADER .. "Fuente:" .. COLOR_RESET)
-    table.insert(lines, COLOR_LINK .. (data.url or "N/A") .. COLOR_RESET)
+    table.insert(lines, COLOR_LINK .. (specData.url or "N/A") .. COLOR_RESET)
 
     return table.concat(lines, "\n")
 end
@@ -99,15 +95,14 @@ end
 -- ─────────────────────────────────────────────
 
 local function createWindow()
-    -- Frame contenedor principal
     local frame = AceGUI:Create("Frame")
-    frame:SetTitle(COLOR_TITLE .. "BuildViewer" .. COLOR_RESET .. " — Builds de Icy Veins")
-    frame:SetStatusText("WoW Midnight · Datos de icy-veins.com")
-    frame:SetWidth(620)
-    frame:SetHeight(520)
+    frame:SetTitle(COLOR_TITLE .. "BuildViewer v2.0" .. COLOR_RESET)
+    frame:SetStatusText("Datos: Icy Veins | Contextos: Overall, Raid, M+")
+    frame:SetWidth(650)
+    frame:SetHeight(550)
     frame:SetLayout("Flow")
 
-    -- Restaurar posición guardada
+    -- Posición
     local savedX, savedY = BuildViewer:GetWindowPosition()
     if savedX and savedY then
         frame.frame:ClearAllPoints()
@@ -115,35 +110,35 @@ local function createWindow()
     else
         frame:SetPoint("CENTER")
     end
-
-    -- Guardar posición al mover
     frame.frame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         local _, _, _, x, y = self:GetPoint()
         BuildViewer:SaveWindowPosition(x, y)
     end)
 
-    -- Al cerrar la ventana con la X
-    frame:SetCallback("OnClose", function()
-        BuildViewer_UI:CloseWindow()
-    end)
+    frame:SetCallback("OnClose", function() BuildViewer_UI:CloseWindow() end)
 
-    -- ── Fila de selección de clase y spec ──────────────
+    -- ── Selectores ───────────────────────────────
     local classDropdown = AceGUI:Create("Dropdown")
-    classDropdown:SetLabel(COLOR_HEADER .. "Clase" .. COLOR_RESET)
-    classDropdown:SetWidth(200)
+    classDropdown:SetLabel("Clase")
+    classDropdown:SetWidth(180)
 
     local specDropdown = AceGUI:Create("Dropdown")
-    specDropdown:SetLabel(COLOR_HEADER .. "Especialización" .. COLOR_RESET)
-    specDropdown:SetWidth(200)
+    specDropdown:SetLabel("Especialización")
+    specDropdown:SetWidth(180)
 
-    -- ── Botones de acción ───────────────────────────────
+    local contextDropdown = AceGUI:Create("Dropdown")
+    contextDropdown:SetLabel("Contexto/Modo")
+    contextDropdown:SetWidth(180)
+    contextDropdown:SetList({["Overall"]="Overall", ["Raid"]="Raid", ["Mythic+"]="Mythic+"})
+
+    -- ── Botones ──────────────────────────────────
     local copyButton = AceGUI:Create("Button")
-    copyButton:SetText("Copiar Talent String")
+    copyButton:SetText("Copiar Talentos")
     copyButton:SetWidth(180)
     copyButton:SetDisabled(true)
 
-    -- ── Contenido de texto (scroll) ─────────────────────
+    -- ── Contenido ────────────────────────────────
     local scrollContainer = AceGUI:Create("SimpleGroup")
     scrollContainer:SetFullWidth(true)
     scrollContainer:SetHeight(360)
@@ -155,182 +150,103 @@ local function createWindow()
 
     local contentLabel = AceGUI:Create("Label")
     contentLabel:SetFullWidth(true)
-    contentLabel:SetText(
-        COLOR_TITLE .. "Bienvenido a BuildViewer" .. COLOR_RESET .. "\n\n" ..
-        "Selecciona una |cffffcc00clase|r y una |cffffcc00especialización|r para ver el build recomendado de Icy Veins.\n\n" ..
-        "También puedes usar el slash command:\n" ..
-        "  |cffffcc00/bv Warrior Arms|r\n" ..
-        "  |cffffcc00/bv Mage Fire|r"
-    )
+    contentLabel:SetText("Selecciona Clase, Spec y el Modo (Raid/M+).")
     scrollFrame:AddChild(contentLabel)
 
-    -- ── Lógica de los dropdowns ─────────────────────────
-
-    -- Variable local para el talent string actual (para el botón de copiar)
     local currentTalentString = nil
 
-    -- Actualiza el contenido del scroll al seleccionar clase/spec
-    local function updateContent(className, specName)
-        if not className or not specName then return end
-        local text = buildText(className, specName)
+    local function updateContent()
+        local className = classDropdown:GetValue()
+        local specName = specDropdown:GetValue()
+        local contextName = contextDropdown:GetValue()
+
+        if not className or not specName or not contextName then return end
+
+        local text = buildText(className, specName, contextName)
         contentLabel:SetText(text)
         scrollFrame:FixScroll()
 
-        -- Actualizar el botón de copiar
-        local buildData = BuildViewerData[className] and BuildViewerData[className][specName]
-        if buildData and buildData.talents and buildData.talents ~= "" then
-            currentTalentString = buildData.talents
+        local specData = BuildViewerData[className] and BuildViewerData[className][specName]
+        local ctxData = specData and specData.builds and specData.builds[contextName]
+        
+        if ctxData and ctxData.talents and ctxData.talents ~= "" then
+            currentTalentString = ctxData.talents
             copyButton:SetDisabled(false)
         else
             currentTalentString = nil
             copyButton:SetDisabled(true)
         end
 
-        BuildViewer:SaveLastSelection(className, specName)
+        BuildViewer:SaveLastSelection(className, specName, contextName)
     end
 
-    -- Popula el dropdown de specs según la clase seleccionada
-    local function populateSpecDropdown(className)
-        if not className or not BuildViewerData[className] then return end
-        local specs = sortedKeys(BuildViewerData[className])
-        local specList = {}
-        for _, spec in ipairs(specs) do
-            specList[spec] = spec
-        end
-        specDropdown:SetList(specList)
+    classDropdown:SetCallback("OnValueChanged", function(w, e, val)
+        local specs = sortedKeys(BuildViewerData[val])
+        local list = {}
+        for _, s in ipairs(specs) do list[s] = s end
+        specDropdown:SetList(list)
         specDropdown:SetValue(nil)
-        specDropdown:SetText("Selecciona spec...")
-        copyButton:SetDisabled(true)
-        currentTalentString = nil
-    end
-
-    -- Callback del dropdown de clase
-    classDropdown:SetCallback("OnValueChanged", function(widget, event, className)
-        populateSpecDropdown(className)
-        -- Intentar restaurar la spec si es la misma clase
-        local lastClass, lastSpec = BuildViewer:GetLastSelection()
-        if lastClass == className and lastSpec and BuildViewerData[className][lastSpec] then
-            specDropdown:SetValue(lastSpec)
-            updateContent(className, lastSpec)
-        end
+        updateContent()
     end)
 
-    -- Callback del dropdown de spec
-    specDropdown:SetCallback("OnValueChanged", function(widget, event, specName)
-        local className = classDropdown:GetValue()
-        if className and specName then
-            updateContent(className, specName)
-        end
-    end)
+    specDropdown:SetCallback("OnValueChanged", updateContent)
+    contextDropdown:SetCallback("OnValueChanged", updateContent)
 
-    -- Callback del botón de copiar
     copyButton:SetCallback("OnClick", function()
         if currentTalentString then
-            -- Copiar al clipboard usando la función nativa de WoW
             if C_Clipboard and C_Clipboard.SetText then
                 C_Clipboard.SetText(currentTalentString)
-                BuildViewer:Print("|cff00ff00Talent string copiado al portapapeles.|r")
+                BuildViewer:Print("|cff00ff00Talentos copiados al portapapeles.|r")
             else
-                -- Fallback: mostrar en el chat para que el usuario lo copie manualmente
-                BuildViewer:Print("Talent string: |cffffcc00" .. currentTalentString .. "|r")
-                BuildViewer:Print("(Selecciona el texto de arriba y cópialo manualmente)")
+                BuildViewer:Print("Talentos: |cffffcc00" .. currentTalentString .. "|r")
             end
         end
     end)
 
-    -- ── Poblar dropdown de clases ───────────────────────
+    -- Población inicial
     local classes = sortedKeys(BuildViewerData)
-    local classList = {}
-    for _, cls in ipairs(classes) do
-        classList[cls] = cls
-    end
-    classDropdown:SetList(classList)
-    classDropdown:SetText("Selecciona clase...")
+    local cList = {}
+    for _, c in ipairs(classes) do cList[c] = c end
+    classDropdown:SetList(cList)
 
-    -- ── Añadir widgets al frame ─────────────────────────
     frame:AddChild(classDropdown)
     frame:AddChild(specDropdown)
+    frame:AddChild(contextDropdown)
     frame:AddChild(copyButton)
     frame:AddChild(scrollContainer)
 
-    -- ── Separador visual ────────────────────────────────
-    -- (AceGUI no tiene separator nativo, usamos un Label vacío como espacio)
-    local spacer = AceGUI:Create("Label")
-    spacer:SetFullWidth(true)
-    spacer:SetText(" ")
-    frame:AddChild(spacer)
-
-    return frame, classDropdown, specDropdown, updateContent
+    return frame, classDropdown, specDropdown, contextDropdown, updateContent
 end
 
--- ─────────────────────────────────────────────
---  API PÚBLICA
--- ─────────────────────────────────────────────
+-- ── API ───────────────────────────────────────
 
--- Abre la ventana. Opcionalmente acepta clase y spec para ir directamente a un build.
-function BuildViewer_UI:OpenWindow(className, specName)
-    if mainFrame then
-        -- Ya está abierta: mostrar y traer al frente
+function BuildViewer_UI:OpenWindow()
+    if mainFrame then 
         mainFrame.frame:Show()
-        mainFrame.frame:Raise()
-        if className then
-            mainFrame._classDropdown:SetValue(className)
-            mainFrame._populateSpec(className)
-            if specName then
-                mainFrame._specDropdown:SetValue(specName)
-                mainFrame._updateContent(className, specName)
-            end
-        end
-        return
+        return 
     end
 
-    -- Crear la ventana
-    local frame, classDropdown, specDropdown, updateContent = createWindow()
-
-    -- Guardar referencias para poder acceder desde fuera
-    frame._classDropdown  = classDropdown
-    frame._specDropdown   = specDropdown
-    frame._updateContent  = updateContent
-    frame._populateSpec   = function(cls)
-        if not cls or not BuildViewerData[cls] then return end
-        local specs = sortedKeys(BuildViewerData[cls])
-        local specList = {}
-        for _, spec in ipairs(specs) do specList[spec] = spec end
-        specDropdown:SetList(specList)
-        specDropdown:SetText("Selecciona spec...")
-    end
-
+    local frame, classDropdown, specDropdown, contextDropdown, updateContent = createWindow()
     mainFrame = frame
 
-    -- Restaurar selección anterior si existe
-    local lastClass, lastSpec = BuildViewer:GetLastSelection()
-    local targetClass = className or lastClass
-    local targetSpec  = specName  or lastSpec
-
-    if targetClass and BuildViewerData[targetClass] then
-        classDropdown:SetValue(targetClass)
-        frame._populateSpec(targetClass)
-        if targetSpec and BuildViewerData[targetClass][targetSpec] then
-            specDropdown:SetValue(targetSpec)
-            updateContent(targetClass, targetSpec)
+    local lastClass, lastSpec, lastContext = BuildViewer:GetLastSelection()
+    if lastClass and BuildViewerData[lastClass] then
+        classDropdown:SetValue(lastClass)
+        local specs = sortedKeys(BuildViewerData[lastClass])
+        local list = {}
+        for _, s in ipairs(specs) do list[s] = s end
+        specDropdown:SetList(list)
+        
+        if lastSpec and BuildViewerData[lastClass][lastSpec] then
+            specDropdown:SetValue(lastSpec)
         end
     end
-
-    -- Si se pasó clase/spec explícitamente y no había ventana abierta, navegar directo
-    if className and specName then
-        updateContent(className, specName)
-    end
+    contextDropdown:SetValue(lastContext or "Overall")
+    updateContent()
 end
 
--- Cierra y destruye la ventana
 function BuildViewer_UI:CloseWindow()
-    if mainFrame then
-        AceGUI:Release(mainFrame)
-        mainFrame = nil
-    end
+    if mainFrame then AceGUI:Release(mainFrame); mainFrame = nil end
 end
 
--- Devuelve true si la ventana está abierta
-function BuildViewer_UI:IsWindowOpen()
-    return mainFrame ~= nil
-end
+function BuildViewer_UI:IsWindowOpen() return mainFrame ~= nil end
