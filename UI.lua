@@ -1,5 +1,5 @@
 -- BuildViewer - UI.lua
--- Interfaz Estilo PaperDoll (Panel de Personaje) v3.2
+-- Interfaz Estilo PaperDoll (Panel de Personaje) v3.3
 
 local AceGUI = LibStub("AceGUI-3.0", true)
 if not AceGUI then return end
@@ -86,7 +86,7 @@ end
 
 local function createWindow()
     local frame = AceGUI:Create("Frame")
-    frame:SetTitle(COLOR_TITLE .. "BuildViewer v3.2" .. COLOR_RESET)
+    frame:SetTitle(COLOR_TITLE .. "BuildViewer v3.3" .. COLOR_RESET)
     frame:SetLayout("Flow")
     
     local w, h = BuildViewer:GetWindowSize()
@@ -95,25 +95,33 @@ local function createWindow()
     if x and y then frame.frame:ClearAllPoints(); frame.frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y) else frame:SetPoint("CENTER") end
 
     frame.frame:SetResizable(true); frame.frame:SetMinResize(600, 500)
-    frame.frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing(); local _, _, _, ox, oy = self:GetPoint(); BuildViewer:SaveWindowPosition(ox, oy) end)
-    frame.frame:SetScript("OnSizeChanged", function(self, nw, nh) BuildViewer:SaveWindowSize(nw, nh) end)
+    
+    -- [CORRECCIÓN CRÍTICA] Usar HookScript en vez de SetScript para no romper el Layout y arrastre de AceGUI
+    frame.frame:HookScript("OnDragStop", function(self)
+        local _, _, _, ox, oy = self:GetPoint()
+        BuildViewer:SaveWindowPosition(ox, oy)
+    end)
+    frame.frame:HookScript("OnSizeChanged", function(self, nw, nh)
+        BuildViewer:SaveWindowSize(nw, nh)
+    end)
+    
     frame:SetCallback("OnClose", function() BuildViewer_UI:CloseWindow() end)
 
-    -- Contenedores
-    local hGroup = AceGUI:Create("SimpleGroup")
-    hGroup:SetFullWidth(true); hGroup:SetLayout("Flow"); frame:AddChild(hGroup)
+    -- Contenedores superiores (Dropdowns y botones)
+    local cd = AceGUI:Create("Dropdown"); cd:SetLabel("Clase"); cd:SetWidth(140); frame:AddChild(cd)
+    local sd = AceGUI:Create("Dropdown"); sd:SetLabel("Especialización"); sd:SetWidth(140); frame:AddChild(sd)
+    local ctd = AceGUI:Create("Dropdown"); ctd:SetLabel("Modo"); ctd:SetWidth(140); ctd:SetList({Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}); frame:AddChild(ctd)
+    local tb = AceGUI:Create("Button"); tb:SetText("Copiar Talentos"); tb:SetWidth(140); frame:AddChild(tb)
 
-    local cd = AceGUI:Create("Dropdown"); cd:SetLabel("Clase"); cd:SetWidth(140); hGroup:AddChild(cd)
-    local sd = AceGUI:Create("Dropdown"); sd:SetLabel("Especialización"); sd:SetWidth(140); hGroup:AddChild(sd)
-    local ctd = AceGUI:Create("Dropdown"); ctd:SetLabel("Modo"); ctd:SetWidth(140); ctd:SetList({Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}); hGroup:AddChild(ctd)
-    local tb = AceGUI:Create("Button"); tb:SetText("Copiar Talentos"); tb:SetWidth(140); hGroup:AddChild(tb)
+    -- [CORRECCIÓN CRÍTICA] El PaperDoll - Usamos un Label como ancla segura para reservar espacio visual
+    local spacer = AceGUI:Create("Label")
+    spacer:SetText(" ") -- No vacío para que tenga efecto
+    spacer:SetFullWidth(true)
+    spacer:SetHeight(400) -- Reserva espacio
+    frame:AddChild(spacer)
 
-    -- El PaperDoll (como grupo MANUAL para posicionar nativos)
-    local dollArea = AceGUI:Create("SimpleGroup")
-    dollArea:SetFullWidth(true); dollArea:SetHeight(400); dollArea:SetLayout("Manual"); frame:AddChild(dollArea)
-
-    local dollFrame = CreateFrame("Frame", nil, dollArea.content)
-    dollFrame:SetAllPoints(dollArea.content)
+    local dollFrame = CreateFrame("Frame", nil, spacer.frame)
+    dollFrame:SetAllPoints()
     
     local bg = dollFrame:CreateTexture(nil, "BACKGROUND")
     bg:SetSize(280, 360); bg:SetPoint("CENTER"); bg:SetTexture("Interface\\PaperdollInfoFrame\\UI-Character-CharacterStats-Background"); bg:SetAlpha(0.2)
