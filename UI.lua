@@ -1,38 +1,42 @@
 -- BuildViewer - UI.lua
--- Interfaz Estilo PaperDoll (Panel de Personaje) v4.0 (Rediseño Sidebar)
-
-local AceGUI = LibStub("AceGUI-3.0", true)
-if not AceGUI then return end
+-- Native WoW 12.0 (Midnight) Compatible Interface v5.1
+-- 100% Native API (No AceGUI for Visuals)
 
 BuildViewer_UI = {}
 local mainFrame = nil
 local slotButtons = {}
 local alternativeIndices = {}
 
+-- UI State
+BuildViewer_UI.c = nil   -- Current Class
+BuildViewer_UI.s = nil   -- Current Spec
+BuildViewer_UI.ctx = "Overall" -- Current Context
+
 local COLOR_TITLE  = "|cff00ccff"
 local COLOR_HEADER = "|cffffcc00"
 local COLOR_RESET  = "|r"
 
 local SLOT_CONFIG = {
-    { slot = "Head",     x = -180, y = 140 }, { slot = "Hands",    x = 180, y = 140 },
-    { slot = "Neck",     x = -180, y = 90  }, { slot = "Waist",    x = 180, y = 90  },
-    { slot = "Shoulder", x = -180, y = 40  }, { slot = "Legs",     x = 180, y = 40  },
-    { slot = "Back",     x = -180, y = -10 }, { slot = "Feet",     x = 180, y = -10 },
-    { slot = "Chest",    x = -180, y = -60 }, { slot = "Finger1",  x = 180, y = -60 },
-    { slot = "Wrist",    x = -180, y = -110}, { slot = "Finger2",  x = 180, y = -110},
-    -- Extras
-    { slot = "Trinket1", x = 180,  y = -160}, { slot = "Trinket2", x = 180,  y = -210},
-    { slot = "MainHand", x = -60,  y = -210}, { slot = "OffHand",  x = 60,   y = -210},
+    { slot = "Head",     x = -170, y = 140 }, { slot = "Hands",    x = 170, y = 140 },
+    { slot = "Neck",     x = -170, y = 95  }, { slot = "Waist",    x = 170, y = 95  },
+    { slot = "Shoulder", x = -170, y = 50  }, { slot = "Legs",     x = 170, y = 50  },
+    { slot = "Back",     x = -170, y = 5   }, { slot = "Feet",     x = 170, y = 5   },
+    { slot = "Chest",    x = -170, y = -40 }, { slot = "Finger1",  x = 170, y = -40 },
+    { slot = "Wrist",    x = -170, y = -85 }, { slot = "Finger2",  x = 170, y = -85 },
+    { slot = "Trinket1", x = 170,  y = -130}, { slot = "Trinket2", x = 170,  y = -175},
+    { slot = "MainHand", x = -50,  y = -175}, { slot = "OffHand",  x = 50,   y = -175},
 }
 
-local function UpdateSlotButton(btn, className, specName, contextName)
-    if not BuildViewerData then return end
-    local items = nil
-    if className and specName and contextName then
-        local spec = BuildViewerData[className] and BuildViewerData[className][specName]
-        local build = spec and spec.builds and spec.builds[contextName]
-        items = build and build.gear and build.gear[btn.slotName]
+-- Helper: Update a single item slot
+local function UpdateSlotButton(btn)
+    if not BuildViewerData or not BuildViewer_UI.c or not BuildViewer_UI.s or not BuildViewer_UI.ctx then
+        btn.icon:SetTexture("Interface\\Paperdoll\\UI-Backpack-EmptySlot")
+        btn.border:Hide(); btn.hasAlt:Hide(); btn.itemID = nil; return
     end
+
+    local spec = BuildViewerData[BuildViewer_UI.c] and BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s]
+    local build = spec and spec.builds and spec.builds[BuildViewer_UI.ctx]
+    local items = build and build.gear and build.gear[btn.slotName]
     
     if not items or #items == 0 then
         btn.icon:SetTexture("Interface\\Paperdoll\\UI-Backpack-EmptySlot")
@@ -55,6 +59,7 @@ local function UpdateSlotButton(btn, className, specName, contextName)
     if #items > 1 then btn.hasAlt:Show() else btn.hasAlt:Hide() end
 end
 
+-- Create a Slot Button
 local function CreateItemSlot(parent, config)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(42, 42); btn:SetPoint("CENTER", parent, "CENTER", config.x, config.y)
@@ -74,166 +79,268 @@ local function CreateItemSlot(parent, config)
     hasAlt:SetSize(14, 14); hasAlt:SetPoint("TOPRIGHT", -1, -1)
     hasAlt:SetTexture("Interface\\Buttons\\UI-RotationLeft-Button-Up"); btn.hasAlt = hasAlt
 
-    btn:SetScript("OnEnter", function(self) if self.itemID then GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetItemByID(self.itemID); GameTooltip:Show() end end)
+    btn:SetScript("OnEnter", function(self) 
+        if self.itemID then 
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetItemByID(self.itemID)
+            GameTooltip:Show() 
+        end 
+    end)
     btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     btn:SetScript("OnClick", function(self)
         if not (BuildViewer_UI.c and BuildViewer_UI.s and BuildViewer_UI.ctx) then return end
-        local build = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s].builds[BuildViewer_UI.ctx]
+        local spec = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s]
+        local build = spec and spec.builds and spec.builds[BuildViewer_UI.ctx]
         local items = build and build.gear and build.gear[self.slotName]
         if items and #items > 1 then
             alternativeIndices[self.slotName] = ((alternativeIndices[self.slotName] or 1) % #items) + 1
-            UpdateSlotButton(self, BuildViewer_UI.c, BuildViewer_UI.s, BuildViewer_UI.ctx)
+            UpdateSlotButton(self)
             PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
         end
     end)
     return btn
 end
 
-local function createWindow()
-    local frame = AceGUI:Create("Frame")
-    frame:SetTitle(COLOR_TITLE .. "BuildViewer v4.0 - Base de Datos" .. COLOR_RESET)
-    frame:SetLayout("Fill") -- Usamos Fill para que el TreeGroup ocupe todo
+-- Refresh the whole UI
+local function RefreshUI()
+    if not mainFrame then return end
     
-    local w, h = BuildViewer:GetWindowSize()
-    frame:SetWidth(w or 850); frame:SetHeight(h or 650)
-    local x, y = BuildViewer:GetWindowPosition()
-    if x and y then 
-        frame.frame:ClearAllPoints(); frame.frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y) 
-    else 
-        frame:SetPoint("CENTER") 
-    end
-
-    frame.frame:SetResizable(true); frame.frame:SetMinResize(700, 500)
-    frame.frame:HookScript("OnDragStop", function(self) local _, _, _, ox, oy = self:GetPoint(); BuildViewer:SaveWindowPosition(ox, oy) end)
-    frame.frame:HookScript("OnSizeChanged", function(self, nw, nh) BuildViewer:SaveWindowSize(nw, nh) end)
-    frame:SetCallback("OnClose", function() BuildViewer_UI:CloseWindow() end)
-
-    -- Navegación Lateral (Abandono de Dropdowns rotos)
-    local treeGroup = AceGUI:Create("TreeGroup")
-    treeGroup:SetTreeWidth(200, false)
-    treeGroup:SetLayout("Flow")
-    frame:AddChild(treeGroup)
-
-    -- Botón Superior (Right Panel)
-    local tb = AceGUI:Create("Button")
-    tb:SetText("Copiar Talentos")
-    tb:SetWidth(200)
-    tb:SetDisabled(true)
-    treeGroup:AddChild(tb)
-
-    -- Espaciador para PaperDoll
-    local spacer = AceGUI:Create("Label")
-    spacer:SetText(" ") 
-    spacer:SetFullWidth(true)
-    spacer:SetHeight(400)
-    treeGroup:AddChild(spacer)
-
-    local dollFrame = CreateFrame("Frame", nil, spacer.frame)
-    dollFrame:SetAllPoints()
+    local c, s, ctx = BuildViewer_UI.c, BuildViewer_UI.s, BuildViewer_UI.ctx
     
-    local bg = dollFrame:CreateTexture(nil, "BACKGROUND")
-    bg:SetSize(280, 360); bg:SetPoint("CENTER", 0, 10)
-    bg:SetTexture("Interface\\PaperdollInfoFrame\\UI-Character-CharacterStats-Background")
-    bg:SetAlpha(0.2)
-
-    slotButtons = {}
-    for _, cfg in ipairs(SLOT_CONFIG) do table.insert(slotButtons, CreateItemSlot(dollFrame, cfg)) end
-
-    local summaryText = AceGUI:Create("Label")
-    summaryText:SetFullWidth(true)
-    summaryText:SetFontObject(GameFontNormalSmall)
-    summaryText:SetText("\n\n\n\n Selecciona una clase a la izquierda.")
-    treeGroup:AddChild(summaryText)
-
-    local function update(c, s, ctx)
-        if not c or not s or not ctx or not BuildViewerData then return end
-        local data = BuildViewerData[c] and BuildViewerData[c][s]
-        if not data then return end
-        
-        for _, b in ipairs(slotButtons) do UpdateSlotButton(b, c, s, ctx) end
-        
-        summaryText:SetText(string.format("\n%sStats: %s|r\n%s", COLOR_HEADER, table.concat(data.stats or {}, " > "), data.summary or ""))
-        
-        local b = data.builds and data.builds[ctx]
-        tb:SetDisabled(not (b and b.talents and b.talents ~= ""))
-        tb.t = b and b.talents
-        BuildViewer:SaveLastSelection(c, s, ctx)
-    end
-
-    tb:SetCallback("OnClick", function(self) if self.t and C_Clipboard then C_Clipboard.SetText(self.t); BuildViewer:Print("Talento copiado.") end end)
-
-    -- Rellenar el Árbol
-    if BuildViewerData then
-        local tData = {}
-        local classes = {}
-        for c in pairs(BuildViewerData) do table.insert(classes, c) end
-        table.sort(classes)
-
-        for _, c in ipairs(classes) do
-            local specNodes = {}
-            local specs = {}
-            for s in pairs(BuildViewerData[c]) do table.insert(specs, s) end
-            table.sort(specs)
-            
-            for _, s in ipairs(specs) do
-                local ctxNodes = {
-                    { value = "Overall", text = "General" },
-                    { value = "Raid", text = "Banda" },
-                    { value = "Mythic+", text = "Míticas+" }
-                }
-                table.insert(specNodes, { value = s, text = s, children = ctxNodes })
-            end
-            table.insert(tData, { value = c, text = "|cff80ff80"..c.."|r", children = specNodes })
-        end
-        treeGroup:SetTree(tData)
-    end
-
-    treeGroup:SetCallback("OnGroupSelected", function(self, event, group)
-        local c, s, ctx = string.split("\001", group)
-        BuildViewer_UI.c = c
-        BuildViewer_UI.s = s
-        BuildViewer_UI.ctx = ctx
-        
-        if c and s and ctx then
-            update(c, s, ctx)
+    -- Highlight Mode Buttons
+    for m, btn in pairs(mainFrame.modeBtns) do
+        if m == ctx then
+            btn:SetAlpha(1.0)
+            btn:SetBackdropBorderColor(1, 0.8, 0)
         else
-            for _, b in ipairs(slotButtons) do UpdateSlotButton(b, nil, nil, nil) end
-            summaryText:SetText("\nSelecciona un modo (General, Banda, Míticas+) a la izquierda.")
-            tb:SetDisabled(true)
+            btn:SetAlpha(0.7)
+            btn:SetBackdropBorderColor(0.4, 0.4, 0.4)
         end
-    end)
+    end
 
-    return frame, treeGroup, update
-end
-
-function BuildViewer_UI:OpenWindow(cls, spec)
-    if not BuildViewerData then print("|cffff0000BuildViewer: Error cargando Builds.lua|r"); return end
-    if mainFrame then 
-        if cls then BuildViewer_UI:SetSelection(cls, spec) end
-        mainFrame:Show()
+    if not c or not s or not ctx or not BuildViewerData then 
+        for _, b in ipairs(slotButtons) do UpdateSlotButton(b) end
+        mainFrame.statsText:SetText("")
+        mainFrame.summaryText:SetText("Selecciona una clase y especialización en el panel izquierdo.")
+        mainFrame.talentBtn:Disable()
         return 
     end
     
-    local f, tg, u = createWindow()
-    mainFrame, BuildViewer_UI.treeGroup, BuildViewer_UI.u = f, tg, u
+    local data = BuildViewerData[c] and BuildViewerData[c][s]
+    if not data then return end
+    
+    for _, b in ipairs(slotButtons) do UpdateSlotButton(b) end
+    
+    local statsStr = table.concat(data.stats or {}, " > ")
+    mainFrame.statsText:SetText(string.format("%sStats: %s%s", COLOR_HEADER, statsStr, COLOR_RESET))
+    mainFrame.summaryText:SetText(data.summary or "")
+    
+    local build = data.builds and data.builds[ctx]
+    if build and build.talents and build.talents ~= "" then
+        mainFrame.talentBtn:Enable()
+        mainFrame.talentBtn.talents = build.talents
+    else
+        mainFrame.talentBtn:Disable()
+    end
+
+    -- Update Sidebar visual selection
+    if BuildViewer_UI.sidebarButtons then
+        for key, btn in pairs(BuildViewer_UI.sidebarButtons) do
+            if key == (c .. s) then
+                btn.text:SetTextColor(0, 1, 0) 
+            else
+                btn.text:SetTextColor(1, 1, 1)
+            end
+        end
+    end
+
+    if BuildViewer then BuildViewer:SaveLastSelection(c, s, ctx) end
+end
+
+-- Initialize the Window
+local function InitWindow()
+    if mainFrame then return end
+    
+    mainFrame = CreateFrame("Frame", "BuildViewerMain", UIParent, "BackdropTemplate")
+    mainFrame:SetSize(850, 650)
+    mainFrame:SetPoint("CENTER")
+    
+    local x, y = BuildViewer:GetWindowPosition()
+    if x and y then mainFrame:ClearAllPoints(); mainFrame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y) end
+
+    mainFrame:SetMovable(true)
+    mainFrame:EnableMouse(true)
+    mainFrame:RegisterForDrag("LeftButton")
+    mainFrame:SetScript("OnDragStart", mainFrame.StartMoving)
+    mainFrame:SetScript("OnDragStop", function(self) 
+        self:StopMovingOrSizing() 
+        local _, _, _, ox, oy = self:GetPoint()
+        BuildViewer:SaveWindowPosition(ox, oy)
+    end)
+    mainFrame:SetFrameStrata("HIGH")
+    
+    mainFrame:SetBackdrop({
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true, tileSize = 32, edgeSize = 32,
+        insets = { left = 8, right = 8, top = 8, bottom = 8 }
+    })
+    mainFrame:SetBackdropColor(0, 0, 0, 0.95)
+
+    local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+    title:SetPoint("TOP", 0, -15)
+    title:SetText(COLOR_TITLE .. "BuildViewer v5.1 (Midnight Native)" .. COLOR_RESET)
+    
+    local close = CreateFrame("Button", nil, mainFrame, "UIPanelCloseButton")
+    close:SetPoint("TOPRIGHT", -5, -5)
+    close:SetScript("OnClick", function() BuildViewer_UI:CloseWindow() end)
+
+    -- Sidebar
+    local sidebar = CreateFrame("Frame", nil, mainFrame, "BackdropTemplate")
+    sidebar:SetSize(220, 560)
+    sidebar:SetPoint("TOPLEFT", 15, -60)
+    sidebar:SetPoint("BOTTOMLEFT", 15, 15)
+    sidebar:SetBackdrop({
+        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+    })
+    sidebar:SetBackdropColor(0, 0, 0, 0.5)
+
+    local scrollFrame = CreateFrame("ScrollFrame", "BuildViewerSidebarScroll", sidebar, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", 8, -8)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 8)
+
+    local content = CreateFrame("Frame", nil, scrollFrame)
+    content:SetSize(180, 1)
+    scrollFrame:SetScrollChild(content)
+
+    BuildViewer_UI.sidebarButtons = {}
+    local yOffset = -5
+    local sortedClasses = {}
+    if BuildViewerData then
+        for c in pairs(BuildViewerData) do table.insert(sortedClasses, c) end
+        table.sort(sortedClasses)
+    end
+
+    for _, cls in ipairs(sortedClasses) do
+        local clsHeader = content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        clsHeader:SetPoint("TOPLEFT", 5, yOffset)
+        clsHeader:SetText("|cffffcc00" .. cls .. "|r")
+        yOffset = yOffset - 22
+
+        local sortedSpecs = {}
+        for s in pairs(BuildViewerData[cls]) do table.insert(sortedSpecs, s) end
+        table.sort(sortedSpecs)
+
+        for _, spec in ipairs(sortedSpecs) do
+            local btn = CreateFrame("Button", nil, content)
+            btn:SetSize(160, 22)
+            btn:SetPoint("TOPLEFT", 15, yOffset)
+            
+            local btnText = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            btnText:SetPoint("LEFT", 5, 0)
+            btnText:SetText(spec)
+            btn.text = btnText
+
+            btn:SetScript("OnEnter", function(self) if not (BuildViewer_UI.c == cls and BuildViewer_UI.s == spec) then self.text:SetTextColor(0, 1, 1) end end)
+            btn:SetScript("OnLeave", function(self) if not (BuildViewer_UI.c == cls and BuildViewer_UI.s == spec) then self.text:SetTextColor(1, 1, 1) end end)
+            btn:SetScript("OnClick", function()
+                BuildViewer_UI.c = cls
+                BuildViewer_UI.s = spec
+                RefreshUI()
+                PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+            end)
+            BuildViewer_UI.sidebarButtons[cls .. spec] = btn
+            yOffset = yOffset - 24
+        end
+        yOffset = yOffset - 15
+    end
+    content:SetSize(180, math.abs(yOffset) + 20)
+
+    -- Modes
+    local modes = {"Overall", "Raid", "Mythic+"}
+    local modeLabels = {Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}
+    mainFrame.modeBtns = {}
+    
+    for i, m in ipairs(modes) do
+        local btn = CreateFrame("Button", nil, mainFrame, "BackdropTemplate,UIPanelButtonTemplate")
+        btn:SetSize(90, 26)
+        btn:SetPoint("TOPLEFT", 250 + (i-1)*95, -60)
+        btn:SetText(modeLabels[m])
+        btn:SetBackdrop({
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            edgeSize = 12,
+            insets = { left = 2, right = 2, top = 2, bottom = 2 }
+        })
+        btn:SetScript("OnClick", function()
+            BuildViewer_UI.ctx = m
+            RefreshUI()
+            PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+        end)
+        mainFrame.modeBtns[m] = btn
+    end
+
+    -- Copy Talents
+    local talentBtn = CreateFrame("Button", nil, mainFrame, "UIPanelButtonTemplate")
+    talentBtn:SetSize(140, 26)
+    talentBtn:SetPoint("TOPRIGHT", -25, -60)
+    talentBtn:SetText("Copiar Talentos")
+    talentBtn:SetScript("OnClick", function(self)
+        if self.talents and C_Clipboard then
+            C_Clipboard.SetText(self.talents)
+            print("|cff00ff00BuildViewer: Talentos copiados.|r")
+            PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
+        end
+    end)
+    mainFrame.talentBtn = talentBtn
+
+    -- Paperdoll
+    local dollArea = CreateFrame("Frame", nil, mainFrame)
+    dollArea:SetSize(580, 520)
+    dollArea:SetPoint("TOPLEFT", 245, -100)
+    dollArea:SetPoint("BOTTOMRIGHT", -20, 20)
+    
+    local dollBG = dollArea:CreateTexture(nil, "BACKGROUND")
+    dollBG:SetSize(320, 420)
+    dollBG:SetPoint("CENTER", 0, 30)
+    dollBG:SetTexture("Interface\\PaperdollInfoFrame\\UI-Character-CharacterStats-Background")
+    dollBG:SetAlpha(0.2)
+
+    slotButtons = {}
+    for _, cfg in ipairs(SLOT_CONFIG) do
+        table.insert(slotButtons, CreateItemSlot(dollArea, cfg))
+    end
+
+    -- Stats
+    local statsText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    statsText:SetPoint("BOTTOMLEFT", 260, 60)
+    mainFrame.statsText = statsText
+
+    local summaryText = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    summaryText:SetPoint("BOTTOMLEFT", 260, 30)
+    summaryText:SetWidth(550)
+    summaryText:SetJustifyH("LEFT")
+    mainFrame.summaryText = summaryText
+end
+
+function BuildViewer_UI:OpenWindow(cls, spec)
+    InitWindow()
+    mainFrame:Show()
     
     local lc, ls, lctx = BuildViewer:GetLastSelection()
-    local c = cls or lc
-    local s = spec or ls
-    local ctx = lctx or "Overall"
+    BuildViewer_UI.c = cls or lc or BuildViewer_UI.c
+    BuildViewer_UI.s = spec or ls or BuildViewer_UI.s
+    BuildViewer_UI.ctx = lctx or BuildViewer_UI.ctx or "Overall"
     
-    if c and s and ctx and BuildViewerData[c] and BuildViewerData[c][s] then
-        tg:SelectByPath(c, s, ctx)
-    end
+    RefreshUI()
 end
 
-function BuildViewer_UI:SetSelection(c, s)
-    if not mainFrame then return end
-    if c and s and BuildViewerData[c] and BuildViewerData[c][s] then
-        local ctx = BuildViewer_UI.ctx or "Overall"
-        BuildViewer_UI.treeGroup:SelectByPath(c, s, ctx)
-    end
+function BuildViewer_UI:CloseWindow()
+    if mainFrame then mainFrame:Hide() end
 end
 
-function BuildViewer_UI:IsWindowOpen() return mainFrame ~= nil and mainFrame:IsShown() end
-function BuildViewer_UI:CloseWindow() if mainFrame then AceGUI:Release(mainFrame); mainFrame = nil end end
+function BuildViewer_UI:IsWindowOpen()
+    return mainFrame and mainFrame:IsShown()
+end
