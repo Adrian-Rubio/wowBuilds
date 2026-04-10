@@ -52,12 +52,12 @@ GUIDES = {
         "Balance":     "https://www.icy-veins.com/wow/balance-druid-pve-dps-guide",
         "Feral":       "https://www.icy-veins.com/wow/feral-druid-pve-dps-guide",
         "Guardian":    "https://www.icy-veins.com/wow/guardian-druid-pve-tank-guide",
-        "Restoration": "https://www.icy-veins.com/wow/restoration-druid-pve-healer-guide",
+        "Restoration": "https://www.icy-veins.com/wow/restoration-druid-pve-healing-guide",
     },
     "Evoker": {
         "Devastation":  "https://www.icy-veins.com/wow/devastation-evoker-pve-dps-guide",
-        "Preservation": "https://www.icy-veins.com/wow/preservation-evoker-pve-healer-guide",
-        "Augmentation": "https://www.icy-veins.com/wow/augmentation-evoker-pve-support-guide",
+        "Preservation": "https://www.icy-veins.com/wow/preservation-evoker-pve-healing-guide",
+        "Augmentation": "https://www.icy-veins.com/wow/augmentation-evoker-pve-dps-guide",
     },
     "Hunter": {
         "Beast Mastery":   "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
@@ -71,17 +71,17 @@ GUIDES = {
     },
     "Monk": {
         "Brewmaster":  "https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-guide",
-        "Mistweaver":  "https://www.icy-veins.com/wow/mistweaver-monk-pve-healer-guide",
+        "Mistweaver":  "https://www.icy-veins.com/wow/mistweaver-monk-pve-healing-guide",
         "Windwalker":  "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
     },
     "Paladin": {
-        "Holy":       "https://www.icy-veins.com/wow/holy-paladin-pve-healer-guide",
+        "Holy":       "https://www.icy-veins.com/wow/holy-paladin-pve-healing-guide",
         "Protection": "https://www.icy-veins.com/wow/protection-paladin-pve-tank-guide",
         "Retribution":"https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
     },
     "Priest": {
-        "Discipline": "https://www.icy-veins.com/wow/discipline-priest-pve-healer-guide",
-        "Holy":       "https://www.icy-veins.com/wow/holy-priest-pve-healer-guide",
+        "Discipline": "https://www.icy-veins.com/wow/discipline-priest-pve-healing-guide",
+        "Holy":       "https://www.icy-veins.com/wow/holy-priest-pve-healing-guide",
         "Shadow":     "https://www.icy-veins.com/wow/shadow-priest-pve-dps-guide",
     },
     "Rogue": {
@@ -92,7 +92,7 @@ GUIDES = {
     "Shaman": {
         "Elemental":    "https://www.icy-veins.com/wow/elemental-shaman-pve-dps-guide",
         "Enhancement":  "https://www.icy-veins.com/wow/enhancement-shaman-pve-dps-guide",
-        "Restoration":  "https://www.icy-veins.com/wow/restoration-shaman-pve-healer-guide",
+        "Restoration":  "https://www.icy-veins.com/wow/restoration-shaman-pve-healing-guide",
     },
     "Warlock": {
         "Affliction":   "https://www.icy-veins.com/wow/affliction-warlock-pve-dps-guide",
