@@ -1,6 +1,6 @@
 -- BuildViewer - UI.lua
--- Native WoW 12.0 (Midnight) Compatible Interface v7.5
--- Final "Midnight" Fix - Robust Matching & Perfect Layout
+-- Native WoW 12.0 (Midnight) Compatible Interface v8.0
+-- "The Invincible PaperDoll" - Defensive UI against Custom Server ID corruption
 
 BuildViewer_UI = {}
 local mainFrame = nil
@@ -12,79 +12,99 @@ BuildViewer_UI.c = nil
 BuildViewer_UI.s = nil   
 BuildViewer_UI.ctx = "Overall" 
 
-local COLOR_TITLE  = "|cff00ccff"
-local COLOR_HEADER = "|cffffcc00"
-local COLOR_RESET  = "|r"
+local COLOR_TITLE       = "|cff00ccff"
+local COLOR_HEADER      = "|cffffcc00"
+local COLOR_RESET       = "|r"
+local COLOR_DEBUG       = "|cffaaaaaa"
+local DEFAULT_ICON      = "Interface\\Icons\\INV_Misc_QuestionMark"
+local EMPTY_SLOT_ICON   = "Interface\\Paperdoll\\UI-Backpack-EmptySlot"
 
--- Symmetrical Coordinates (Centered inside the Right Panel)
 local SLOT_CONFIG = {
-    -- Left Column (x = -150)
-    { slot = "Head",     x = -155, y = 170 },
-    { slot = "Neck",     x = -155, y = 125 },
-    { slot = "Shoulder", x = -155, y = 80  },
-    { slot = "Back",     x = -155, y = 35  },
-    { slot = "Chest",    x = -155, y = -10 },
-    { slot = "Wrist",    x = -155, y = -55 },
-    -- Right Column (x = 155)
-    { slot = "Hands",    x = 155, y = 170  },
-    { slot = "Waist",    x = 155, y = 125  },
-    { slot = "Legs",     x = 155, y = 80   },
-    { slot = "Feet",     x = 155, y = 35   },
-    { slot = "Finger1",  x = 155, y = -10  },
-    { slot = "Finger2",  x = 155, y = -55  },
-    { slot = "Trinket1", x = 155, y = -100 },
-    { slot = "Trinket2", x = 155, y = -145 },
-    -- Bottom Row (Weapon Space)
-    { slot = "MainHand", x = -55, y = -190 },
-    { slot = "OffHand",  x = 55,  y = -190 },
+    { slot = "Head",     x = -155, y = 170 }, { slot = "Hands",    x = 155, y = 170  },
+    { slot = "Neck",     x = -155, y = 125 }, { slot = "Waist",    x = 155, y = 125  },
+    { slot = "Shoulder", x = -155, y = 80  }, { slot = "Legs",     x = 155, y = 80   },
+    { slot = "Back",     x = -155, y = 35  }, { slot = "Feet",     x = 155, y = 35   },
+    { slot = "Chest",    x = -155, y = -10 }, { slot = "Finger1",  x = 155, y = -10  },
+    { slot = "Wrist",    x = -155, y = -55 }, { slot = "Finger2",  x = 155, y = -55  },
+    { slot = "Trinket1", x = 155, y = -100 }, { slot = "Trinket2", x = 155, y = -145 },
+    { slot = "MainHand", x = -55,  y = -190 }, { slot = "OffHand",  x = 55,   y = -190 },
 }
 
--- Intelligent Item Link System (Cross-ID & Name fallback)
-local function RequestItemInfo(btn, itemID, itemName)
+-- Defensive Tooltip: Shows official tooltip if possible, otherwise custom data
+local function ShowDefensiveTooltip(btn)
+    GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
+    local showedOfficial = false
+    
+    if btn.itemID then
+        -- Intentamos el oficial
+        GameTooltip:SetItemByID(btn.itemID)
+        -- Si GetItemInfo no devuelve nada, el tooltip oficial estará vacío/roto
+        if GetItemInfo(btn.itemID) then
+            showedOfficial = true
+        end
+    end
+    
+    if not showedOfficial and btn.expectedName then
+        if not btn.itemID then GameTooltip:ClearLines() end
+        GameTooltip:AddLine("|cffffffff" .. btn.expectedName .. "|r")
+        GameTooltip:AddLine(COLOR_DEBUG .. "Este objeto no existe en la base de datos local del servidor." .. COLOR_RESET)
+        GameTooltip:AddLine(COLOR_DEBUG .. "(Recomendación de Icy Veins)" .. COLOR_RESET)
+        if btn.itemID then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("|cff00ff00ID Retail detectado: " .. btn.itemID .. "|r")
+        end
+    end
+    
+    GameTooltip:Show()
+end
+
+-- Defensive Icon Loader
+local function RequestItemDefensive(btn, itemID, itemName)
+    -- Reset a ? por seguridad antes del async
+    btn.icon:SetTexture(DEFAULT_ICON)
+    btn.border:Hide()
+    
     if not itemID then return end
     
     local i = Item:CreateFromItemID(itemID)
     i:ContinueOnItemDataReady(function()
-        local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemID)
+        local name, _, quality, _, _, _, _, _, _, texture = GetItemInfo(itemID)
         
-        -- Si el ID falla (típico de Midnight Custom), buscamos por NOMBRE
-        if not texture and itemName then
-            local newName, _, newQuality, _, _, _, _, _, _, newTexture = GetItemInfo(itemName)
-            if newTexture then
-                texture, quality = newTexture, newQuality
-                -- Buscamos el ID real que tiene el cliente para este objeto
+        -- Fallback por Nombre si el ID falla
+        if (not texture or texture == 0) and itemName then
+            local n2, _, q2, _, _, _, _, _, _, t2 = GetItemInfo(itemName)
+            if t2 then
+                name, texture, quality = n2, t2, q2
                 local _, link = GetItemInfo(itemName)
-                if link then
-                    local foundID = tonumber(link:match("item:(%d+)"))
-                    if foundID then btn.itemID = foundID end
-                end
+                if link then btn.itemID = tonumber(link:match("item:(%d+)")) end
             end
         end
         
-        if texture then
+        -- Solo cambiamos el icono si la textura es "real" y conocida (no 0 ni invisible)
+        if texture and texture ~= 0 and texture ~= "" then
             btn.icon:SetTexture(texture)
             if quality then
                 local r, g, b = GetItemQualityColor(quality)
                 btn.border:SetVertexColor(r, g, b, 1); btn.border:Show()
-            else btn.border:Hide() end
+            end
         else
-            btn.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-            btn.border:Hide()
+            btn.icon:SetTexture(DEFAULT_ICON) -- Mantener interrogante si es "Aire"
         end
     end)
 end
 
 local function UpdateSlotButton(btn)
-    if not BuildViewerData or not BuildViewer_UI.c or not BuildViewer_UI.s or not BuildViewer_UI.ctx then
-        btn.icon:SetTexture("Interface\\Paperdoll\\UI-Backpack-EmptySlot"); btn.border:Hide(); btn.hasAlt:Hide(); return
+    if not (BuildViewerData and BuildViewer_UI.c and BuildViewer_UI.s) then
+        btn.icon:SetTexture(EMPTY_SLOT_ICON); btn.border:Hide(); btn.hasAlt:Hide(); 
+        btn.itemID = nil; btn.expectedName = nil; return
     end
     
-    local spec = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s]
-    local build = spec.builds[BuildViewer_UI.ctx]
+    local build = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s].builds[BuildViewer_UI.ctx]
     local items = build.gear and build.gear[btn.slotName]
     
     if not items or #items == 0 then
-        btn.icon:SetTexture("Interface\\Paperdoll\\UI-Backpack-EmptySlot"); btn.border:Hide(); btn.hasAlt:Hide(); return
+        btn.icon:SetTexture(EMPTY_SLOT_ICON); btn.border:Hide(); btn.hasAlt:Hide(); 
+        btn.itemID = nil; btn.expectedName = nil; return
     end
 
     local idx = alternativeIndices[btn.slotName] or 1
@@ -92,9 +112,9 @@ local function UpdateSlotButton(btn)
     local itm = items[idx]
     
     btn.itemID = itm.id
-    btn.itemName = itm.name
+    btn.expectedName = itm.name
     
-    RequestItemInfo(btn, itm.id, itm.name)
+    RequestItemDefensive(btn, itm.id, itm.name)
     if #items > 1 then btn.hasAlt:Show() else btn.hasAlt:Hide() end
 end
 
@@ -102,9 +122,9 @@ local function RefreshUI()
     if not mainFrame then return end
     local c, s, ctx = BuildViewer_UI.c, BuildViewer_UI.s, BuildViewer_UI.ctx
     
-    if not c or not s or not ctx or not BuildViewerData then 
+    if not (c and s and ctx and BuildViewerData) then 
         for _, b in ipairs(slotButtons) do UpdateSlotButton(b) end
-        mainFrame.sumText:SetText("Selecciona Clase y Spec."); mainFrame.statsText:SetText(""); return 
+        mainFrame.sumText:SetText("Selecciona Clase y Especialización."); return 
     end
     
     local data = BuildViewerData[c] and BuildViewerData[c][s]
@@ -156,7 +176,7 @@ local function InitWindow()
     BuildViewer_UI.sbBtns = {}
     local y = -5
     local sorted = {}
-    if BuildViewerData then for c in pairs(BuildViewerData) do table.insert(sorted, c) end end
+    if BuildViewerData then for cl in pairs(BuildViewerData) do table.insert(sorted, cl) end end
     table.sort(sorted)
 
     for _, c_val in ipairs(sorted) do
@@ -165,12 +185,12 @@ local function InitWindow()
         for s_val in pairs(BuildViewerData[c_val]) do table.insert(specs, s_val) end
         table.sort(specs)
         for _, s_val in ipairs(specs) do
-            local current_c, current_s = c_val, s_val
+            local cur_c, cur_s = c_val, s_val
             local b = CreateFrame("Button", nil, cont); b:SetSize(150, 18); b:SetPoint("TOPLEFT", 10, y)
             local bg = b:CreateTexture(nil, "BACKGROUND"); bg:SetAllPoints(); bg:SetColorTexture(1, 1, 1, 0.1); bg:SetAlpha(0); b.bg = bg
-            local bt = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"); bt:SetPoint("LEFT", 5, 0); bt:SetText(current_s); b.t = bt
-            b:SetScript("OnClick", function() BuildViewer_UI.c=current_c; BuildViewer_UI.s=current_s; RefreshUI(); PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end)
-            BuildViewer_UI.sbBtns[current_c .. current_s] = b; y = y - 18
+            local bt = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall"); bt:SetPoint("LEFT", 5, 0); bt:SetText(cur_s); b.t = bt
+            b:SetScript("OnClick", function() BuildViewer_UI.c=cur_c; BuildViewer_UI.s=cur_s; RefreshUI(); PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON) end)
+            BuildViewer_UI.sbBtns[cur_c .. cur_s] = b; y = y - 18
         end
         y = y - 10
     end
@@ -182,12 +202,12 @@ local function InitWindow()
     local model = CreateFrame("PlayerModel", nil, centerArea)
     model:SetSize(450, 550); model:SetPoint("CENTER", 0, 15); model:SetUnit("player"); model:SetRotation(0); mainFrame.model = model
 
-    local modes = {"Overall", "Raid", "Mythic+"}; local l = {Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}
+    local modes = {"Overall", "Raid", "Mythic+"}; local lo = {Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}
     mainFrame.modeBtns = {}
-    for i, m in ipairs(modes) do
+    for i, md in ipairs(modes) do
         local b = CreateFrame("Button", nil, centerArea, "UIPanelButtonTemplate")
-        b:SetSize(95, 26); b:SetPoint("TOPLEFT", 50 + (i-1)*100, -10); b:SetText(l[m])
-        b:SetScript("OnClick", function() BuildViewer_UI.ctx = m; RefreshUI() end); mainFrame.modeBtns[m] = b
+        b:SetSize(95, 26); b:SetPoint("TOPLEFT", 50 + (i-1)*100, -10); b:SetText(lo[md])
+        b:SetScript("OnClick", function() BuildViewer_UI.ctx = md; RefreshUI() end); mainFrame.modeBtns[md] = b
     end
 
     local talBtn = CreateFrame("Button", nil, centerArea, "UIPanelButtonTemplate")
@@ -201,10 +221,10 @@ local function InitWindow()
         local icon = b:CreateTexture(nil, "ARTWORK"); icon:SetAllPoints(); icon:SetTexCoord(0.07, 0.93, 0.07, 0.93); b.icon = icon
         local bor = b:CreateTexture(nil, "OVERLAY"); bor:SetSize(66, 66); bor:SetPoint("CENTER"); bor:SetTexture("Interface\\Buttons\\UI-ActionButton-Border"); b.border = bor
         local alt = b:CreateTexture(nil, "OVERLAY"); alt:SetSize(14, 14); alt:SetPoint("TOPRIGHT", -1, -1); alt:SetTexture("Interface\\Buttons\\UI-RotationLeft-Button-Up"); b.hasAlt = alt
-        b:SetScript("OnEnter", function(obj) if obj.itemID then GameTooltip:SetOwner(obj, "ANCHOR_RIGHT"); GameTooltip:SetItemByID(obj.itemID); GameTooltip:Show() end end)
+        b:SetScript("OnEnter", function(obj) ShowDefensiveTooltip(obj) end)
         b:SetScript("OnLeave", function() GameTooltip:Hide() end)
         b:SetScript("OnClick", function(obj)
-            if not BuildViewer_UI.c then return end
+            if not (BuildViewer_UI.c and BuildViewer_UI.s) then return end
             local items = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s].builds[BuildViewer_UI.ctx].gear[obj.slotName]
             if items and #items > 1 then alternativeIndices[obj.slotName] = ((alternativeIndices[obj.slotName] or 1) % #items) + 1; UpdateSlotButton(obj) end
         end)
