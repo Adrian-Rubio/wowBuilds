@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-scrape_icyvein.py v2.1
+scrape_icyvein.py v3.0
 ======================
-Extracción avanzada de builds:
-- Soporte para contextos: Overall, Raid, Mythic+
-- Extracción de Talent Strings desde páginas específicas.
-- Extracción de BiS Gear (Best in Slot) categorizado.
+Extracción de datos estructurados para interfaz de equipo (PaperDoll):
+- Item IDs para tooltips nativos.
+- Mantenimiento de alternativas de equipo.
+- Contextos: Overall, Raid, Mythic+
 """
 
 import re
@@ -29,7 +29,7 @@ HEADERS = {
     )
 }
 
-REQUEST_DELAY = 1.0
+REQUEST_DELAY = 0.5 # Acelerado un poco para compensar el volumen
 
 GUIDES = {
     "Death Knight": {
@@ -120,10 +120,6 @@ def extract_summary(soup: BeautifulSoup) -> str:
     if intro_section:
         p = intro_section.find_next("p")
         if p: return p.get_text(strip=True)
-    article = soup.find("article") or soup.find("div", class_="content")
-    if article:
-        p = article.find("p")
-        if p: return p.get_text(strip=True)
     return "Consulte Icy Veins."
 
 def extract_stats(soup: BeautifulSoup) -> list[str]:
@@ -135,11 +131,6 @@ def extract_stats(soup: BeautifulSoup) -> list[str]:
             for li in ol.find_all("li", limit=6):
                 text = re.sub(r"\s*\(.*?\)", "", li.get_text(strip=True)).strip()
                 if text: stats.append(text)
-    if not stats:
-        text = soup.get_text()
-        match = re.search(r"stat priority[:\s]+([A-Za-z ,>≥=]+?)(?:\n|\.|;)", text, re.IGNORECASE)
-        if match:
-            stats = [s.strip() for s in re.split(r"[,>]", match.group(1)) if s.strip()]
     return stats[:6]
 
 # ─────────────────────────────────────────────────────────
@@ -152,16 +143,13 @@ def extract_talents_from_page(url: str) -> dict:
     if not soup: return data
 
     all_strings = []
-    # Usar regex para encontrar strings de talentos válidos
     pattern = re.compile(r"[A-Za-z0-9+/=]{50,1000}")
     
-    # Buscar en elementos con clases comunes de Icy Veins
     for tag in soup.find_all(["code", "textarea", "span", "div"]):
         text = tag.get_text(strip=True)
         if pattern.fullmatch(text) and not text.startswith('Alchemy'):
             all_strings.append(text)
     
-    # Eliminar duplicados manteniendo orden
     seen = set()
     unique_strings = [x for x in all_strings if not (x in seen or seen.add(x))]
 
@@ -177,28 +165,62 @@ def extract_talents_from_page(url: str) -> dict:
     return data
 
 # ─────────────────────────────────────────────────────────
-#  EXTRACCIÓN DE EQUIPO (BiS)
+#  EXTRACCIÓN DE EQUIPO DINÁMICO (BiS + ITEM IDs)
 # ─────────────────────────────────────────────────────────
 
-def extract_gear_table(soup: BeautifulSoup) -> str:
+def extract_item_id(tag):
+    """Extrae el Item ID de data-wowhead."""
+    wowhead_attr = tag.get('data-wowhead', '')
+    match = re.search(r'item=(\d+)', wowhead_attr)
+    if match:
+        return int(match.group(1))
+    return None
+
+def extract_gear_table_structured(soup: BeautifulSoup) -> dict:
     table = soup.find("table")
-    if not table: return ""
+    if not table: return {}
     
-    rows = []
+    gear_data = {}
     for tr in table.find_all("tr"):
         cols = tr.find_all(["td", "th"])
         if len(cols) >= 2:
-            slot = clean_text(cols[0].get_text())
-            item = clean_text(cols[1].get_text())
-            if slot and item and slot.lower() != "slot":
-                rows.append(f"{slot}: {item}")
+            slot_text = clean_text(cols[0].get_text()).lower()
+            # Mapeo a slots estándar de WoW para facilitar la UI
+            slot = ""
+            if "head" in slot_text or "helm" in slot_text: slot = "Head"
+            elif "neck" in slot_text: slot = "Neck"
+            elif "shoulders" in slot_text or "shoulder" in slot_text: slot = "Shoulder"
+            elif "back" in slot_text or "cloak" in slot_text: slot = "Back"
+            elif "chest" in slot_text: slot = "Chest"
+            elif "wrists" in slot_text or "wrist" in slot_text or "bracers" in slot_text: slot = "Wrist"
+            elif "hands" in slot_text or "gloves" in slot_text: slot = "Hands"
+            elif "waist" in slot_text or "belt" in slot_text: slot = "Waist"
+            elif "legs" in slot_text: slot = "Legs"
+            elif "feet" in slot_text or "boots" in slot_text: slot = "Feet"
+            elif "ring #1" in slot_text or "finger #1" in slot_text: slot = "Finger1"
+            elif "ring #2" in slot_text or "finger #2" in slot_text: slot = "Finger2"
+            elif "trinket #1" in slot_text: slot = "Trinket1"
+            elif "trinket #2" in slot_text: slot = "Trinket2"
+            elif "weapon" in slot_text or "hand" in slot_text: slot = "MainHand"
+            elif "off-hand" in slot_text or "shield" in slot_text: slot = "OffHand"
+            
+            if slot:
+                # Buscar todos los links de objetos en la celda (Opciones alternos)
+                items = []
+                for item_span in cols[1].find_all("span", attrs={'data-wowhead': True}):
+                    item_id = extract_item_id(item_span)
+                    item_name = clean_text(item_span.get_text())
+                    if item_id:
+                        items.append({"id": item_id, "name": item_name})
+                
+                if items:
+                    gear_data[slot] = items
     
-    return "\n".join(rows)
+    return gear_data
 
-def fetch_bis_gear(base_url: str) -> dict:
+def fetch_bis_gear_structured(base_url: str) -> dict:
     gear_url = base_url.replace("-guide", "-gear-best-in-slot")
-    # Limpiar posibles terminaciones de rol
-    results = {"Overall": "", "Raid": "", "Mythic+": ""}
+    results = {"Overall": {}, "Raid": {}, "Mythic+": {}}
     
     areas = {
         "Overall":  gear_url + "?area=area_1",
@@ -210,7 +232,7 @@ def fetch_bis_gear(base_url: str) -> dict:
         print(f"    - Fetching gear {context}...")
         soup = fetch_page(url)
         if soup:
-            results[context] = extract_gear_table(soup)
+            results[context] = extract_gear_table_structured(soup)
         time.sleep(0.3)
             
     return results
@@ -230,11 +252,11 @@ def process_spec(class_name, spec_name, main_url):
         stats = extract_stats(soup_main)
     
     talents_url = main_url.replace("-guide", "-spec-builds-talents")
-    print(f"  -> {talents_url}")
+    print(f"  -> Talents: {talents_url}")
     talents_data = extract_talents_from_page(talents_url)
     
-    print(f"  -> Gear Search...")
-    gear_data = fetch_bis_gear(main_url)
+    print(f"  -> Gear Search (Item IDs)...")
+    gear_data = fetch_bis_gear_structured(main_url)
     
     return {
         "summary": summary,
@@ -254,7 +276,7 @@ def process_spec(class_name, spec_name, main_url):
 def build_lua_file(data):
     today = datetime.date.today().isoformat()
     lines = [
-        "-- BuildViewerData v2.1",
+        "-- BuildViewerData v3.0",
         f"-- Última actualización: {today}",
         "BuildViewerData = {",
     ]
@@ -275,7 +297,14 @@ def build_lua_file(data):
             for ctx, b in build["builds"].items():
                 lines.append(f'                [{lua_str(ctx)}] = {{')
                 lines.append(f'                    talents = {lua_str(b["talents"])},')
-                lines.append(f'                    gear    = {lua_str(b["gear"])},')
+                lines.append(f'                    gear    = {{')
+                for slot, items in b["gear"].items():
+                    # Formato: ["Slot"] = { {id=1, name="n"}, {id=2, name="n2"} }
+                    item_list_lua = []
+                    for item in items:
+                        item_list_lua.append(f'{{ id = {item["id"]}, name = {lua_str(item["name"])} }}')
+                    lines.append(f'                        [{lua_str(slot)}] = {{ {", ".join(item_list_lua)} }},')
+                lines.append(f'                    }},')
                 lines.append(f'                }},')
             lines.append(f'            }},')
             lines.append(f'        }},')
@@ -297,7 +326,7 @@ def main():
             
     lua_content = build_lua_file(all_data)
     OUTPUT_FILE.write_text(lua_content, encoding="utf-8")
-    print("\n¡Proceso completado con éxito!")
+    print("\n¡Proceso estructurado completado!")
 
 if __name__ == "__main__":
     main()
