@@ -1,5 +1,5 @@
 -- BuildViewer - UI.lua
--- Interfaz Estilo PaperDoll (Panel de Personaje) v3.3
+-- Interfaz Estilo PaperDoll (Panel de Personaje) v4.0 (Rediseño Sidebar)
 
 local AceGUI = LibStub("AceGUI-3.0", true)
 if not AceGUI then return end
@@ -27,9 +27,12 @@ local SLOT_CONFIG = {
 
 local function UpdateSlotButton(btn, className, specName, contextName)
     if not BuildViewerData then return end
-    local items = (BuildViewerData[className] and BuildViewerData[className][specName] and 
-                   BuildViewerData[className][specName].builds[contextName] and 
-                   BuildViewerData[className][specName].builds[contextName].gear[btn.slotName])
+    local items = nil
+    if className and specName and contextName then
+        local spec = BuildViewerData[className] and BuildViewerData[className][specName]
+        local build = spec and spec.builds and spec.builds[contextName]
+        items = build and build.gear and build.gear[btn.slotName]
+    end
     
     if not items or #items == 0 then
         btn.icon:SetTexture("Interface\\Paperdoll\\UI-Backpack-EmptySlot")
@@ -74,7 +77,9 @@ local function CreateItemSlot(parent, config)
     btn:SetScript("OnEnter", function(self) if self.itemID then GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetItemByID(self.itemID); GameTooltip:Show() end end)
     btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
     btn:SetScript("OnClick", function(self)
-        local items = BuildViewerData[BuildViewer_UI.c] and BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s] and BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s].builds[BuildViewer_UI.ctx].gear[self.slotName]
+        if not (BuildViewer_UI.c and BuildViewer_UI.s and BuildViewer_UI.ctx) then return end
+        local build = BuildViewerData[BuildViewer_UI.c][BuildViewer_UI.s].builds[BuildViewer_UI.ctx]
+        local items = build and build.gear and build.gear[self.slotName]
         if items and #items > 1 then
             alternativeIndices[self.slotName] = ((alternativeIndices[self.slotName] or 1) % #items) + 1
             UpdateSlotButton(self, BuildViewer_UI.c, BuildViewer_UI.s, BuildViewer_UI.ctx)
@@ -86,96 +91,149 @@ end
 
 local function createWindow()
     local frame = AceGUI:Create("Frame")
-    frame:SetTitle(COLOR_TITLE .. "BuildViewer v3.3" .. COLOR_RESET)
-    frame:SetLayout("Flow")
+    frame:SetTitle(COLOR_TITLE .. "BuildViewer v4.0 - Base de Datos" .. COLOR_RESET)
+    frame:SetLayout("Fill") -- Usamos Fill para que el TreeGroup ocupe todo
     
     local w, h = BuildViewer:GetWindowSize()
-    frame:SetWidth(w or 800); frame:SetHeight(h or 650)
+    frame:SetWidth(w or 850); frame:SetHeight(h or 650)
     local x, y = BuildViewer:GetWindowPosition()
-    if x and y then frame.frame:ClearAllPoints(); frame.frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y) else frame:SetPoint("CENTER") end
+    if x and y then 
+        frame.frame:ClearAllPoints(); frame.frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y) 
+    else 
+        frame:SetPoint("CENTER") 
+    end
 
-    frame.frame:SetResizable(true); frame.frame:SetMinResize(600, 500)
-    
-    -- [CORRECCIÓN CRÍTICA] Usar HookScript en vez de SetScript para no romper el Layout y arrastre de AceGUI
-    frame.frame:HookScript("OnDragStop", function(self)
-        local _, _, _, ox, oy = self:GetPoint()
-        BuildViewer:SaveWindowPosition(ox, oy)
-    end)
-    frame.frame:HookScript("OnSizeChanged", function(self, nw, nh)
-        BuildViewer:SaveWindowSize(nw, nh)
-    end)
-    
+    frame.frame:SetResizable(true); frame.frame:SetMinResize(700, 500)
+    frame.frame:HookScript("OnDragStop", function(self) local _, _, _, ox, oy = self:GetPoint(); BuildViewer:SaveWindowPosition(ox, oy) end)
+    frame.frame:HookScript("OnSizeChanged", function(self, nw, nh) BuildViewer:SaveWindowSize(nw, nh) end)
     frame:SetCallback("OnClose", function() BuildViewer_UI:CloseWindow() end)
 
-    -- Contenedores superiores (Dropdowns y botones)
-    local cd = AceGUI:Create("Dropdown"); cd:SetLabel("Clase"); cd:SetWidth(140); frame:AddChild(cd)
-    local sd = AceGUI:Create("Dropdown"); sd:SetLabel("Especialización"); sd:SetWidth(140); frame:AddChild(sd)
-    local ctd = AceGUI:Create("Dropdown"); ctd:SetLabel("Modo"); ctd:SetWidth(140); ctd:SetList({Overall="General", Raid="Banda", ["Mythic+"]="Míticas+"}); frame:AddChild(ctd)
-    local tb = AceGUI:Create("Button"); tb:SetText("Copiar Talentos"); tb:SetWidth(140); frame:AddChild(tb)
+    -- Navegación Lateral (Abandono de Dropdowns rotos)
+    local treeGroup = AceGUI:Create("TreeGroup")
+    treeGroup:SetTreeWidth(200, false)
+    treeGroup:SetLayout("Flow")
+    frame:AddChild(treeGroup)
 
-    -- [CORRECCIÓN CRÍTICA] El PaperDoll - Usamos un Label como ancla segura para reservar espacio visual
+    -- Botón Superior (Right Panel)
+    local tb = AceGUI:Create("Button")
+    tb:SetText("Copiar Talentos")
+    tb:SetWidth(200)
+    tb:SetDisabled(true)
+    treeGroup:AddChild(tb)
+
+    -- Espaciador para PaperDoll
     local spacer = AceGUI:Create("Label")
-    spacer:SetText(" ") -- No vacío para que tenga efecto
+    spacer:SetText(" ") 
     spacer:SetFullWidth(true)
-    spacer:SetHeight(400) -- Reserva espacio
-    frame:AddChild(spacer)
+    spacer:SetHeight(400)
+    treeGroup:AddChild(spacer)
 
     local dollFrame = CreateFrame("Frame", nil, spacer.frame)
     dollFrame:SetAllPoints()
     
     local bg = dollFrame:CreateTexture(nil, "BACKGROUND")
-    bg:SetSize(280, 360); bg:SetPoint("CENTER"); bg:SetTexture("Interface\\PaperdollInfoFrame\\UI-Character-CharacterStats-Background"); bg:SetAlpha(0.2)
+    bg:SetSize(280, 360); bg:SetPoint("CENTER", 0, 10)
+    bg:SetTexture("Interface\\PaperdollInfoFrame\\UI-Character-CharacterStats-Background")
+    bg:SetAlpha(0.2)
 
     slotButtons = {}
     for _, cfg in ipairs(SLOT_CONFIG) do table.insert(slotButtons, CreateItemSlot(dollFrame, cfg)) end
 
-    local summary = AceGUI:Create("Label"); summary:SetFullWidth(true); summary:SetFontObject(GameFontNormalSmall); frame:AddChild(summary)
+    local summaryText = AceGUI:Create("Label")
+    summaryText:SetFullWidth(true)
+    summaryText:SetFontObject(GameFontNormalSmall)
+    summaryText:SetText("\n\n\n\n Selecciona una clase a la izquierda.")
+    treeGroup:AddChild(summaryText)
 
-    local function update()
-        local c, s, ctx = cd:GetValue(), sd:GetValue(), ctd:GetValue()
-        BuildViewer_UI.c, BuildViewer_UI.s, BuildViewer_UI.ctx = c, s, ctx
+    local function update(c, s, ctx)
         if not c or not s or not ctx or not BuildViewerData then return end
         local data = BuildViewerData[c] and BuildViewerData[c][s]
         if not data then return end
+        
         for _, b in ipairs(slotButtons) do UpdateSlotButton(b, c, s, ctx) end
-        summary:SetText(string.format("\n%sStats: %s|r\n%s", COLOR_HEADER, table.concat(data.stats or {}, " > "), data.summary or ""))
-        local b = data.builds[ctx]; tb:SetDisabled(not (b and b.talents and b.talents ~= "")); tb.t = b and b.talents
+        
+        summaryText:SetText(string.format("\n%sStats: %s|r\n%s", COLOR_HEADER, table.concat(data.stats or {}, " > "), data.summary or ""))
+        
+        local b = data.builds and data.builds[ctx]
+        tb:SetDisabled(not (b and b.talents and b.talents ~= ""))
+        tb.t = b and b.talents
         BuildViewer:SaveLastSelection(c, s, ctx)
     end
 
-    cd:SetCallback("OnValueChanged", function(_, _, v)
-        local list = {}; if BuildViewerData[v] then for k in pairs(BuildViewerData[v]) do list[k] = k end end
-        sd:SetList(list); sd:SetValue(nil); update()
-    end)
-    sd:SetCallback("OnValueChanged", update); ctd:SetCallback("OnValueChanged", update)
     tb:SetCallback("OnClick", function(self) if self.t and C_Clipboard then C_Clipboard.SetText(self.t); BuildViewer:Print("Talento copiado.") end end)
 
+    -- Rellenar el Árbol
     if BuildViewerData then
-        local list = {}; for k in pairs(BuildViewerData) do list[k] = k end
-        cd:SetList(list)
+        local tData = {}
+        local classes = {}
+        for c in pairs(BuildViewerData) do table.insert(classes, c) end
+        table.sort(classes)
+
+        for _, c in ipairs(classes) do
+            local specNodes = {}
+            local specs = {}
+            for s in pairs(BuildViewerData[c]) do table.insert(specs, s) end
+            table.sort(specs)
+            
+            for _, s in ipairs(specs) do
+                local ctxNodes = {
+                    { value = "Overall", text = "General" },
+                    { value = "Raid", text = "Banda" },
+                    { value = "Mythic+", text = "Míticas+" }
+                }
+                table.insert(specNodes, { value = s, text = s, children = ctxNodes })
+            end
+            table.insert(tData, { value = c, text = "|cff80ff80"..c.."|r", children = specNodes })
+        end
+        treeGroup:SetTree(tData)
     end
 
-    return frame, cd, sd, ctd, update
+    treeGroup:SetCallback("OnGroupSelected", function(self, event, group)
+        local c, s, ctx = string.split("\001", group)
+        BuildViewer_UI.c = c
+        BuildViewer_UI.s = s
+        BuildViewer_UI.ctx = ctx
+        
+        if c and s and ctx then
+            update(c, s, ctx)
+        else
+            for _, b in ipairs(slotButtons) do UpdateSlotButton(b, nil, nil, nil) end
+            summaryText:SetText("\nSelecciona un modo (General, Banda, Míticas+) a la izquierda.")
+            tb:SetDisabled(true)
+        end
+    end)
+
+    return frame, treeGroup, update
 end
 
 function BuildViewer_UI:OpenWindow(cls, spec)
     if not BuildViewerData then print("|cffff0000BuildViewer: Error cargando Builds.lua|r"); return end
-    if mainFrame then if cls then BuildViewer_UI:SetSelection(cls, spec) end; mainFrame:Show(); return end
-    local f, cd, sd, ctd, u = createWindow()
-    mainFrame, BuildViewer_UI.cd, BuildViewer_UI.sd, BuildViewer_UI.u = f, cd, sd, u
-    local lc, ls, lctx = BuildViewer:GetLastSelection()
-    local c, s = cls or lc, spec or ls
-    if c and BuildViewerData[c] then
-        cd:SetValue(c); local l = {}; for k in pairs(BuildViewerData[c]) do l[k] = k end; sd:SetList(l)
-        if s and BuildViewerData[c][s] then sd:SetValue(s) end
+    if mainFrame then 
+        if cls then BuildViewer_UI:SetSelection(cls, spec) end
+        mainFrame:Show()
+        return 
     end
-    ctd:SetValue(lctx or "Overall"); u()
+    
+    local f, tg, u = createWindow()
+    mainFrame, BuildViewer_UI.treeGroup, BuildViewer_UI.u = f, tg, u
+    
+    local lc, ls, lctx = BuildViewer:GetLastSelection()
+    local c = cls or lc
+    local s = spec or ls
+    local ctx = lctx or "Overall"
+    
+    if c and s and ctx and BuildViewerData[c] and BuildViewerData[c][s] then
+        tg:SelectByPath(c, s, ctx)
+    end
 end
 
 function BuildViewer_UI:SetSelection(c, s)
     if not mainFrame then return end
-    self.cd:SetValue(c); local l = {}; if BuildViewerData[c] then for k in pairs(BuildViewerData[c]) do l[k] = k end end
-    self.sd:SetList(l); self.sd:SetValue(s); self.u()
+    if c and s and BuildViewerData[c] and BuildViewerData[c][s] then
+        local ctx = BuildViewer_UI.ctx or "Overall"
+        BuildViewer_UI.treeGroup:SelectByPath(c, s, ctx)
+    end
 end
+
 function BuildViewer_UI:IsWindowOpen() return mainFrame ~= nil and mainFrame:IsShown() end
 function BuildViewer_UI:CloseWindow() if mainFrame then AceGUI:Release(mainFrame); mainFrame = nil end end
