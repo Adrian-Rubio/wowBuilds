@@ -1,4 +1,4 @@
-## Interface: 120005
+## Interface: 120001
 ## Title: BuildViewer
 ## Notes: Muestra builds recomendados de Icy Veins por clase y especialización
 ## Version: 1.0.0
