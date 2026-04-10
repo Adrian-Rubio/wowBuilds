@@ -177,19 +177,39 @@ local function createWindow()
     frame:SetHeight(650)
     frame:SetLayout("Flow")
 
-    -- Callbacks de posición
+    -- Callbacks de posición y tamaño
     local savedX, savedY = BuildViewer:GetWindowPosition()
+    local savedW, savedH = BuildViewer:GetWindowSize() -- Necesitaremos crear este helper en Core.lua o usar uno genérico
+    
+    if savedW and savedH then
+        frame:SetWidth(savedW)
+        frame:SetHeight(savedH)
+    else
+        frame:SetWidth(800)
+        frame:SetHeight(650)
+    end
+
     if savedX and savedY then
         frame.frame:ClearAllPoints()
         frame.frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", savedX, savedY)
     else
         frame:SetPoint("CENTER")
     end
+
+    -- Permitir redimensionado
+    frame.frame:SetResizable(true)
+    frame.frame:SetMinResize(600, 500)
+    
     frame.frame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         local _, _, _, x, y = self:GetPoint()
         BuildViewer:SaveWindowPosition(x, y)
     end)
+
+    frame.frame:SetScript("OnSizeChanged", function(self, width, height)
+        BuildViewer:SaveWindowSize(width, height)
+    end)
+
     frame:SetCallback("OnClose", function() BuildViewer_UI:CloseWindow() end)
 
     -- Contenedor de Selectores Superior

@@ -18,6 +18,8 @@ local DB_DEFAULTS = {
         lastContext = "Overall", -- último contexto (Overall, Raid, Mythic+)
         windowX     = nil,   -- posición X de la ventana
         windowY     = nil,   -- posición Y de la ventana
+        windowWidth = 800,   -- ancho de la ventana
+        windowHeight= 650,   -- alto de la ventana
     }
 }
 
@@ -134,6 +136,17 @@ end
 -- Devuelve la posición guardada de la ventana
 function BuildViewer:GetWindowPosition()
     return self.db.char.windowX, self.db.char.windowY
+end
+
+-- Guarda el tamaño de la ventana
+function BuildViewer:SaveWindowSize(w, h)
+    self.db.char.windowWidth = w
+    self.db.char.windowHeight = h
+end
+
+-- Devuelve el tamaño guardado de la ventana
+function BuildViewer:GetWindowSize()
+    return self.db.char.windowWidth, self.db.char.windowHeight
 end
 
 -- Referencia global al addon para que UI.lua pueda acceder a él
